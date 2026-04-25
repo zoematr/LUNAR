@@ -1,0 +1,10 @@
+.lunar/
+__pycache__/
+*.pyc
+*.pyo
+outputs/
+run_results/
+models_lunar/
+logs/
+*.egg-info/
+.DS_Store
