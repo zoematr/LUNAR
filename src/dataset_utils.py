@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from src.data_loader import QuestionsDataset
 from src.hook_for_unlearn import (
     get_activations,
+    get_activations_moe,
     perturb_post_block_activations_forget,
 )
 from src.estimated_net_utils import EstimatedNet, LUNAR_LoRA_net
@@ -271,6 +272,138 @@ def prepare_estimated_net_lora_list(
             output_dim=down_proj_out_features,
             rank=8,
             pretrained_weight=weight_parameter,
+        ).to(device, dtype=torch.bfloat16)
+
+        estimated_net_list.append(estimated_down_proj)
+
+    return estimated_net_list
+
+
+def prepare_trainset_raw_moe(
+    pre_down_proj_activation_forget,
+    post_block_activation_forget,
+    pre_post_attention_layernorm_activation_forget,
+    pre_down_proj_activation_remain,
+    post_block_activation_remain,
+    pre_post_attention_layernorm_activation_remain,
+):
+    """
+    MoE version of prepare_trainset_raw.
+
+    In MoE, each expert processes a different subset of tokens, so pre_down_proj
+    activations have shape [1, total_expert_tokens, intermediate_size] per sample —
+    total_expert_tokens is not equal to seq_len because of top-k routing.
+
+    To get consistent (input, target) pairs, we average across all token/expert
+    positions per sample. This is the baseline approximation: one averaged vector
+    per sample, rather than one vector per token as in the dense case.
+
+    Shapes after averaging:
+      - forget input:  [n_forget_samples, intermediate_size]
+      - forget target: [n_forget_samples, hidden_size]
+      - remain input:  [n_remain_samples, intermediate_size]
+      - remain target: [n_remain_samples, hidden_size]
+    """
+    # Average across the token/expert dim (dim=1) for each sample
+    inputs_forget = [item.mean(dim=1).detach() for item in pre_down_proj_activation_forget]
+    post_mlp_forget = [
+        (x - y).mean(dim=1).detach()
+        for x, y in zip(
+            post_block_activation_forget,
+            pre_post_attention_layernorm_activation_forget,
+        )
+    ]
+
+    remain_inputs = [item.mean(dim=1) for item in pre_down_proj_activation_remain]
+    remain_targets = [
+        (x - y).mean(dim=1)
+        for x, y in zip(
+            post_block_activation_remain,
+            pre_post_attention_layernorm_activation_remain,
+        )
+    ]
+
+    concat_forget_input = torch.cat([a.squeeze(0) for a in inputs_forget], dim=0)
+    concat_forget_target = torch.cat([a.squeeze(0) for a in post_mlp_forget], dim=0)
+    inputs_remain = torch.cat([a.squeeze(0) for a in remain_inputs], dim=0)
+    targets_remain = torch.cat([a.squeeze(0) for a in remain_targets], dim=0)
+
+    return concat_forget_input, concat_forget_target, inputs_remain, targets_remain
+
+
+def prepare_trainset_moe(
+    layer_idx_list,
+    model_base,
+    forget_dataset,
+    retain_dataset,
+    direction,
+    coeff_list,
+    device,
+):
+    """MoE version of prepare_trainset. Uses get_activations_moe for expert-level hooks."""
+    forget_input_list = []
+    forget_target_list = []
+    remain_input_list = []
+    remain_target_list = []
+
+    for i, layer_idx in enumerate(layer_idx_list):
+        (
+            post_block_forget,
+            post_block_remain,
+            pre_post_attn_forget,
+            pre_post_attn_remain,
+            pre_down_proj_forget,
+            pre_down_proj_remain,
+        ) = get_activations_moe(model_base, layer_idx, forget_dataset, retain_dataset)
+
+        post_block_forget = perturb_post_block_activations_forget(
+            post_block_forget, direction[i], coeff=coeff_list[i]
+        )
+
+        concat_forget_input, concat_forget_target, inputs_remain, targets_remain = (
+            prepare_trainset_raw_moe(
+                pre_down_proj_forget,
+                post_block_forget,
+                pre_post_attn_forget,
+                pre_down_proj_remain,
+                post_block_remain,
+                pre_post_attn_remain,
+            )
+        )
+
+        forget_input_list.append(concat_forget_input)
+        forget_target_list.append(concat_forget_target)
+        remain_input_list.append(inputs_remain)
+        remain_target_list.append(targets_remain)
+
+    return forget_input_list, forget_target_list, remain_input_list, remain_target_list, []
+
+
+def prepare_estimated_net_list_moe(device, layer_idx_list, model_base, init_model_list=None):
+    """
+    MoE version of prepare_estimated_net_list.
+
+    Creates one shared EstimatedNet per layer, initialized with the average weight
+    across all experts' down_proj. After training, this shared weight is copied to
+    every expert — the baseline assumption that all experts should be updated equally.
+    """
+    estimated_net_list = []
+
+    for layer_idx in layer_idx_list:
+        experts = model_base._get_layer_experts(layer_idx)
+        expert_weights = [
+            model_base._get_expert_down_proj(e).weight.clone() for e in experts
+        ]
+        avg_weight = torch.stack(expert_weights).mean(0)
+
+        in_features = avg_weight.shape[1]
+        out_features = avg_weight.shape[0]
+
+        estimated_down_proj = EstimatedNet(
+            in_features=in_features,
+            out_features=out_features,
+            bias=False,
+            original_down_proj_weight=avg_weight,
         ).to(device, dtype=torch.bfloat16)
 
         estimated_net_list.append(estimated_down_proj)

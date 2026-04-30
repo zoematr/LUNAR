@@ -1,0 +1,18 @@
+# Routing frequency analysis — OLMoE-1B-7B
+
+# Model
+model_family: olmoe-1b-7b-instruct
+base_model_path: allenai/OLMoE-1B-7B-0924-Instruct
+model_path: ${base_model_path}
+
+# Data
+data_name: wmdp_bio
+forget_edge: ['wmdp_bio']
+use_different_retain_dataset: true
+different_retain_set_path: dataset/unlearning/factual_data.json
+
+# Analysis knobs
+max_samples: null  # null = use all; set e.g. 128 to cap both sets
+
+# Output
+save_path: run_results/routing/${model_family}/${data_name}

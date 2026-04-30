@@ -41,7 +41,7 @@ def get_mean_activations(
     d_model = model.config.hidden_size
 
     mean_activations = torch.zeros(
-        (n_positions, n_layers, d_model), dtype=torch.float64, device=model.device
+        (n_positions, n_layers, d_model), dtype=torch.float32, device=model.device
     )
 
     fwd_pre_hooks = [

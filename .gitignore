@@ -1,0 +1,8 @@
+.lunar/
+__pycache__/
+outputs/
+run_results/
+models_lunar/
+logs/
+.DS_Store
+*.pyc

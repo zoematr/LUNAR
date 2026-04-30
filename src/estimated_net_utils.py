@@ -104,9 +104,10 @@ def train(model, train_loader, optimizer, scheduler, device, num_epochs=100):
             total=len(train_loader), desc=f"Epoch [{epoch+1}/{num_epochs}]"
         ) as pbar:
             # Loop through the batches of the training data
+            model_dtype = next(model.parameters()).dtype
             for input, target in train_loader:
-                input = input.to(device)
-                target = target.to(device)
+                input = input.to(device, dtype=model_dtype)
+                target = target.to(device, dtype=model_dtype)
                 optimizer.zero_grad()  # Zero the gradients
 
                 # Forward pass
@@ -151,9 +152,10 @@ def train_multiple_layers(
         ) as pbar:
             # Loop through the batches of the training data
 
+            model_dtype = next(model_list[0].parameters()).dtype
             for inputs_list, targets_list in train_loader:
-                inputs_list = [input.to(device) for input in inputs_list]
-                targets_list = [target.to(device) for target in targets_list]
+                inputs_list = [input.to(device, dtype=model_dtype) for input in inputs_list]
+                targets_list = [target.to(device, dtype=model_dtype) for target in targets_list]
 
                 optimizer.zero_grad()  # Zero the gradients
 
