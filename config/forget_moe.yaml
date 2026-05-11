@@ -7,10 +7,11 @@ model_path: ${base_model_path}
 # -----------------------------
 # Data
 # -----------------------------
-data_name: wmdp_bio
-forget_edge: ['wmdp_bio']
-use_different_retain_dataset: true
-different_retain_set_path: dataset/unlearning/factual_data.json
+data_name: pistol_sample1
+forget_edge: ['A_B'] # this should be a list # ['A_B'] ['author_1']
+use_different_retain_dataset: false # if true, the retain dataset will be different from the forget dataset, otherwise it will be the same as the forget dataset
+different_retain_set_path: dataset/unlearning/factual_data.json # this is the path to the different retain dataset, only used if use_different_retain_dataset is true
+
 
 # -----------------------------
 # Unlearning knobs
