@@ -47,7 +47,7 @@ def _collect_routing_counts(
     def make_hook(layer_idx: int):
         def hook_fn(module, input, output):
             # output: [seq_len, num_experts] router logits (batch=1, already squeezed)
-            logits = output.detach().float()
+            logits = output[0].detach().float()
             topk_idx = torch.topk(logits, top_k, dim=-1).indices  # [seq, top_k]
             flat = topk_idx.reshape(-1).cpu().numpy()
             np.add.at(counts[layer_idx], flat, 1)
