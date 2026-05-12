@@ -46,10 +46,10 @@ def _collect_routing_counts(
 
     def make_hook(layer_idx: int):
         def hook_fn(module, input, output):
-            # output: [seq_len, num_experts] router logits (batch=1, already squeezed)
-            logits = output[0].detach().float()
-            topk_idx = torch.topk(logits, top_k, dim=-1).indices  # [seq, top_k]
-            flat = topk_idx.reshape(-1).cpu().numpy()
+            # output: (router_logits, top_k_weights, top_k_indices)
+            # use the actual routing decisions rather than recomputing from logits
+            top_k_index = output[2].detach()  # [seq_len, top_k]
+            flat = top_k_index.reshape(-1).cpu().numpy()
             np.add.at(counts[layer_idx], flat, 1)
         return hook_fn
 
@@ -60,14 +60,15 @@ def _collect_routing_counts(
     model_base._eval()
     tokenizer = model_base.tokenizer
 
-    with torch.no_grad():
-        for prompt in tqdm(prompts, desc="forward passes", leave=False):
-            formatted = f"<|user|>\n{prompt}\n<|assistant|>\n"
-            enc = tokenizer(formatted, return_tensors="pt").to(device)
-            model_base._forward(enc)
-
-    for h in hooks:
-        h.remove()
+    try:
+        with torch.no_grad():
+            for prompt in tqdm(prompts, desc="forward passes", leave=False):
+                formatted = f"<|user|>\n{prompt}\n<|assistant|>\n"
+                enc = tokenizer(formatted, return_tensors="pt").to(device)
+                model_base._forward(enc)
+    finally:
+        for h in hooks:
+            h.remove()
 
     return counts
 
