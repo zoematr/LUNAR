@@ -94,12 +94,12 @@ def act_add_olmo_weights(model, direction: Float[Tensor, "d_model"], coeff, laye
 
 class OLMoModel(ModelBase):
 
-    def _load_model(self, model_path, dtype=torch.float32):
+    def _load_model(self, model_path, dtype=torch.bfloat16):
         model = AutoModelForCausalLM.from_pretrained(
             model_path,
             dtype=dtype,
             trust_remote_code=True,
-            device_map="cpu",
+            device_map="auto",
         ).eval()
 
         model.requires_grad_(False)
