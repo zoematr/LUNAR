@@ -6,6 +6,7 @@ from src.model_utils.mistral_model import MistralModel
 from src.model_utils.gemma_model import GemmaModel
 from src.model_utils.qwen_model import QwenModel
 from src.model_utils.olmo_model import OLMoModel
+from src.model_utils.olmoe_model import OLMoEModel
 
 
 def load_model(model_family, model_path, device):
@@ -21,6 +22,8 @@ def load_model(model_family, model_path, device):
         model_base = QwenModel(model_path)
     elif model_family == "olmo-2-1b-instruct":
         model_base = OLMoModel(model_path)
+    elif model_family == "olmoe-1b-7b-instruct":
+        model_base = OLMoEModel(model_path)
     else:
         raise ValueError(f"Unknown model family: {model_path}")
     model_base = model_base._to(device)
