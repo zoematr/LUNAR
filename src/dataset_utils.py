@@ -323,10 +323,10 @@ def prepare_trainset_raw_moe(
         )
     ]
 
-    concat_forget_input = torch.cat([a.squeeze(0) for a in inputs_forget], dim=0)
-    concat_forget_target = torch.cat([a.squeeze(0) for a in post_mlp_forget], dim=0)
-    inputs_remain = torch.cat([a.squeeze(0) for a in remain_inputs], dim=0)
-    targets_remain = torch.cat([a.squeeze(0) for a in remain_targets], dim=0)
+    concat_forget_input = torch.cat(inputs_forget, dim=0)
+    concat_forget_target = torch.cat(post_mlp_forget, dim=0)
+    inputs_remain = torch.cat(remain_inputs, dim=0)
+    targets_remain = torch.cat(remain_targets, dim=0)
 
     return concat_forget_input, concat_forget_target, inputs_remain, targets_remain
 
