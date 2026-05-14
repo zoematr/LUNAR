@@ -267,6 +267,72 @@ def get_reverse_purtubred_activations_fwd_hook(vector, coeff):
     return hook_fn
 
 
+def _get_pre_down_proj_activation_moe_fused(
+    model_base, input_data, tokenize_instructions_fn, layer_idx, batch_size
+):
+    """
+    Pre-down_proj capture for the fused OlmoeExperts used in newer transformers.
+
+    OlmoeExperts stores all expert weights as stacked 3D tensors, so there are no
+    individual nn.Module objects to attach forward hooks to. Instead, we temporarily
+    replace the module's forward method with one that captures the intermediate
+    activation (act(gate) * up) before the down_proj linear for each active expert.
+    """
+    import torch.nn.functional as F
+
+    experts_module = model_base.model.model.layers[layer_idx].mlp.experts
+    num_experts = experts_module.num_experts
+    activations = []
+
+    for i in tqdm(range(0, len(input_data), batch_size)):
+        instructions = input_data[i: i + batch_size]
+        inputs = tokenize_instructions_fn(instructions=instructions)
+
+        per_expert_captures = [[] for _ in range(num_experts)]
+
+        def capturing_forward(hidden_states, top_k_index, top_k_weights):
+            final_hidden_states = torch.zeros_like(hidden_states)
+            with torch.no_grad():
+                expert_mask = F.one_hot(top_k_index, num_classes=num_experts)
+                expert_mask = expert_mask.permute(2, 1, 0)
+                expert_hit = (expert_mask.sum(dim=(-1, -2)) > 0).nonzero()
+
+            for expert_idx_t in expert_hit:
+                expert_idx = expert_idx_t[0]
+                if expert_idx >= num_experts:
+                    continue
+                top_k_pos, token_idx = torch.where(expert_mask[expert_idx])
+                current_state = hidden_states[token_idx]
+                gate, up = F.linear(
+                    current_state, experts_module.gate_up_proj[expert_idx]
+                ).chunk(2, dim=-1)
+                pre_down = experts_module.act_fn(gate) * up
+                per_expert_captures[expert_idx.item()].append(pre_down.detach())
+                out = F.linear(pre_down, experts_module.down_proj[expert_idx])
+                out = out * top_k_weights[token_idx, top_k_pos, None]
+                final_hidden_states.index_add_(0, token_idx, out.to(final_hidden_states.dtype))
+
+            return final_hidden_states
+
+        original_forward = experts_module.forward
+        experts_module.forward = capturing_forward
+        try:
+            with torch.no_grad():
+                model_base.model(
+                    input_ids=inputs.input_ids.to(model_base.model.device),
+                    attention_mask=inputs.attention_mask.to(model_base.model.device),
+                )
+        finally:
+            experts_module.forward = original_forward
+
+        all_expert_acts = [act for caps in per_expert_captures for act in caps]
+        if all_expert_acts:
+            combined = torch.cat(all_expert_acts, dim=0)
+            activations.append(combined.unsqueeze(0))
+
+    return activations
+
+
 def get_pre_down_proj_activation_moe(
     model_base, input_data, tokenize_instructions_fn, layer_idx, batch_size
 ):
@@ -283,6 +349,14 @@ def get_pre_down_proj_activation_moe(
     because of top-k routing).
     """
     experts = model_base._get_layer_experts(layer_idx)
+
+    # Newer transformers uses a fused OlmoeExperts with stacked weight tensors
+    # instead of individual nn.Module objects — hooks can't attach to tensor slices.
+    if getattr(experts[0], '_is_fused', False):
+        return _get_pre_down_proj_activation_moe_fused(
+            model_base, input_data, tokenize_instructions_fn, layer_idx, batch_size
+        )
+
     activations = []
 
     for i in tqdm(range(0, len(input_data), batch_size)):

@@ -20,6 +20,22 @@ OLMOE_CHAT_TEMPLATE = """<|user|>
 OLMOE_REFUSAL_TOKS = [40, 2170]  # ['I', 'As'] — verify with tokenizer if needed
 
 
+class _FusedExpertProxy:
+    """Thin proxy giving a uniform .down_proj.weight view over one expert inside
+    the fused OlmoeExperts module (newer transformers), where weights are stored
+    as stacked 3D tensors rather than individual nn.Linear modules."""
+    _is_fused = True
+
+    class _DownProjProxy:
+        def __init__(self, weight):
+            self.weight = weight
+
+    def __init__(self, experts_module, idx: int):
+        self._experts_module = experts_module
+        self._idx = idx
+        self.down_proj = self._DownProjProxy(experts_module.down_proj[idx])
+
+
 def format_instruction_olmoe_chat(
     instruction: str,
     output: str = None,
@@ -149,7 +165,12 @@ class OLMoEModel(MoEModelBase):
     # --- MoEModelBase methods ---
 
     def _get_layer_experts(self, layer_idx: int):
-        return list(self.model.model.layers[layer_idx].mlp.experts)
+        experts = self.model.model.layers[layer_idx].mlp.experts
+        if isinstance(experts, torch.nn.ModuleList):
+            return list(experts)
+        # Newer transformers: OlmoeExperts stores weights as stacked 3D tensors.
+        # Return proxy objects so callers get a uniform .down_proj.weight interface.
+        return [_FusedExpertProxy(experts, i) for i in range(experts.num_experts)]
 
     def _get_expert_down_proj(self, expert):
         return expert.down_proj
