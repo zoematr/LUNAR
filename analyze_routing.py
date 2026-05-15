@@ -82,7 +82,11 @@ def _overlap_cosine(a: np.ndarray, b: np.ndarray) -> float:
 
 @hydra.main(version_base=None, config_path="config", config_name="routing_analysis")
 def analyze_routing(cfg: DictConfig):
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    cfg_device = cfg.get("device", "cpu")
+    if cfg_device == "auto":
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    else:
+        device = torch.device(cfg_device)
     print(f"device: {device}")
 
     model_base = load_model(cfg.model_family, cfg.model_path, device)

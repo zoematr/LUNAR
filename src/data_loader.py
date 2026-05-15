@@ -46,7 +46,7 @@ def convert_raw_data_to_model_qa(tokenizer, max_length, question, answer, config
         new_question = LLAMA2_CHAT_TEMPLATE.format(instruction=question)
     elif configs.model_family == "gemma-7b-it":
         new_question = GEMMA_CHAT_TEMPLATE.format(instruction=question)
-    elif configs.model_family == "olmo-2-1b-instruct":
+    elif configs.model_family in ("olmo-2-1b-instruct", "olmoe-1b-7b-instruct"):
         new_question = OLMO_CHAT_TEMPLATE.format(instruction=question)
     else:
         raise ValueError(f"Invalid model_family")
@@ -102,7 +102,7 @@ def convert_raw_questions_to_model_questions(tokenizer, max_length, question, co
         new_question = ZEPHYR_CHAT_TEMPLATE.format(instruction=question)
     elif configs.model_family == "gemma-7b-it":
         new_question = GEMMA_CHAT_TEMPLATE.format(instruction=question)
-    elif configs.model_family == "olmo-2-1b-instruct":
+    elif configs.model_family in ("olmo-2-1b-instruct", "olmoe-1b-7b-instruct"):
         new_question = OLMO_CHAT_TEMPLATE.format(instruction=question)
     else:
         raise ValueError(f"Invalid model_family")

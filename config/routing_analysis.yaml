@@ -12,6 +12,9 @@ use_different_retain_dataset: false # if true, the retain dataset will be differ
 different_retain_set_path: dataset/unlearning/factual_data.json # this is the path to the different retain dataset, only used if use_different_retain_dataset is true
 
 
+# Device: "cpu", "cuda", "cuda:0", or "auto" (auto-detects)
+device: cpu
+
 # Analysis knobs
 max_samples: null  # null = use all; set e.g. 128 to cap both sets
 
