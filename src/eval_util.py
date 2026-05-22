@@ -129,7 +129,7 @@ def run_generation(cfg, batch, model, tokenizer, fwd_pre_hooks=[], fwd_hooks=[],
             input_ids, skip_special_tokens=False
         )  # skip special token was TRUE for llama2b
         split_symbol = "<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-    elif cfg.model_family in ("Qwen2-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen2-57B-A14B-Instruct"):
+    elif cfg.model_family in ("Qwen2-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen2-57B-A14B-Instruct", "Qwen1.5-MoE-A2.7B-Chat"):
         input_strings = tokenizer.batch_decode(input_ids, skip_special_tokens=False)
         split_symbol = "<|im_end|>\n<|im_start|>assistant\n"
     elif cfg.model_family == "gemma-7b-it":
@@ -153,7 +153,7 @@ def run_generation(cfg, batch, model, tokenizer, fwd_pre_hooks=[], fwd_hooks=[],
             re.sub(r"(<\|eot_id\|>)+$", "", re.sub(r"\n\n", "", text))
             for text in ground_truth
         ]
-    elif cfg.model_family in ("Qwen2-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen2-57B-A14B-Instruct"):
+    elif cfg.model_family in ("Qwen2-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen2-57B-A14B-Instruct", "Qwen1.5-MoE-A2.7B-Chat"):
         ground_truth = [
             re.sub(
                 r"(<\|im_end\|>)+$", "", re.sub(r"\n<\|im_start\|>assistant", "", text)

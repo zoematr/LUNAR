@@ -1,19 +1,30 @@
-# Routing frequency analysis — OLMoE-1B-7B
+# Routing frequency analysis
+#
+# ── Pick a model (uncomment one block) ──────────────────────────────
 
-# Model
+# OLMoE-1B-7B — fits on free Colab T4 / CPU
 model_family: olmoe-1b-7b-instruct
 base_model_path: allenai/OLMoE-1B-7B-0924-Instruct
+
+# Qwen1.5-MoE-A2.7B — same architecture as Qwen2-57B, use for bug testing (~29GB bfloat16, needs A100 40GB)
+# model_family: Qwen1.5-MoE-A2.7B-Chat
+# base_model_path: Qwen/Qwen1.5-MoE-A2.7B-Chat
+
+# Qwen2-57B-A14B — full model, cluster only (~115GB bfloat16, needs ~8×GPU)
+# model_family: Qwen2-57B-A14B-Instruct
+# base_model_path: Qwen/Qwen2-57B-A14B-Instruct
+
+# ────────────────────────────────────────────────────────────────────
 model_path: ${base_model_path}
 
 # Data
 data_name: pistol_sample1
-forget_edge: ['A_B'] # this should be a list # ['A_B'] ['author_1']
-use_different_retain_dataset: false # if true, the retain dataset will be different from the forget dataset, otherwise it will be the same as the forget dataset
-different_retain_set_path: dataset/unlearning/factual_data.json # this is the path to the different retain dataset, only used if use_different_retain_dataset is true
+forget_edge: ['A_B']
+use_different_retain_dataset: false
+different_retain_set_path: dataset/unlearning/factual_data.json
 
-
-# Device: "cpu", "cuda", "cuda:0", or "auto" (auto-detects)
-device: cpu
+# Device: "cpu", "cuda", "cuda:0", or "auto" (auto-detects GPU)
+device: auto
 
 # Analysis knobs
 max_samples: null  # null = use all; set e.g. 128 to cap both sets

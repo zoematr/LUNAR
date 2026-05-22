@@ -21,7 +21,7 @@ def load_model(model_family, model_path, device):
         model_base = GemmaModel(model_path)
     elif model_family == "Qwen2-7B-Instruct":
         model_base = QwenModel(model_path)
-    elif model_family == "Qwen2-57B-A14B-Instruct":
+    elif model_family in ("Qwen2-57B-A14B-Instruct", "Qwen1.5-MoE-A2.7B-Chat"):
         model_base = Qwen2MoEModel(model_path)
     elif model_family == "olmo-2-1b-instruct":
         model_base = OLMoModel(model_path)
