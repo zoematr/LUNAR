@@ -7,7 +7,6 @@ Uses MoE-specific activation collection and EstimatedNet training.
 
 from __future__ import annotations
 
-import copy
 import json
 import logging
 import os
@@ -83,8 +82,6 @@ def run_forget_moe(cfg):
     print(f"forget_dataset: {len(forget_dataset)}")
     print(f"retain_dataset: {len(retain_dataset)}")
 
-    updated_model = copy.deepcopy(model_base)
-
     (
         forget_input_list,
         forget_target_list,
@@ -141,16 +138,16 @@ def run_forget_moe(cfg):
     # Apply learned weight to ALL experts in each target layer
     # -----------------------------
     for i, layer_idx in enumerate(layer_idx_list):
-        experts = updated_model._get_layer_experts(layer_idx)
+        experts = model_base._get_layer_experts(layer_idx)
         learned_weight = updated_estimated_net_list[i].down_proj.weight.data
         for expert in experts:
-            updated_model._get_expert_down_proj(expert).weight.data = learned_weight.clone()
+            model_base._get_expert_down_proj(expert).weight.data = learned_weight.clone()
 
     if cfg.save_unlearned_model:
         if not os.path.exists(os.path.dirname(cfg.save_unlearned_model_path)):
             os.makedirs(os.path.dirname(cfg.save_unlearned_model_path))
         print(f"Saving unlearned model to {cfg.save_unlearned_model_path}")
-        updated_model._save_pretrained(cfg.save_unlearned_model_path)
+        model_base._save_pretrained(cfg.save_unlearned_model_path)
 
     # -----------------------------
     # Evaluation
@@ -159,7 +156,7 @@ def run_forget_moe(cfg):
         cfg=cfg,
         data_path=data_path,
         tokenizer=model_base.tokenizer,
-        model=updated_model,
+        model=model_base,
         eval_target="forget_edge",
         output_es_score=cfg.compute_es_score,
     )
@@ -167,7 +164,7 @@ def run_forget_moe(cfg):
         cfg=cfg,
         data_path=data_path,
         tokenizer=model_base.tokenizer,
-        model=updated_model,
+        model=model_base,
         eval_target="retained_edge",
         output_es_score=False,
     )
@@ -176,7 +173,7 @@ def run_forget_moe(cfg):
             cfg=cfg,
             data_path=cfg.factual_data_path,
             tokenizer=model_base.tokenizer,
-            model=updated_model,
+            model=model_base,
             eval_target="factual_data",
             output_es_score=False,
         )
