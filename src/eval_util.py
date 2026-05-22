@@ -70,7 +70,7 @@ def get_all_evals(
             batch[k] = v.to("cuda")
 
         with torch.no_grad():
-            outputs = model.model(**batch)  # New: add .model instead of _forward
+            outputs = model.model(input_ids=batch["input_ids"], attention_mask=batch["attention_mask"])  # no labels — avoids float32 cast in transformer loss
             input_string, gen_output, gt, scores, perplexity, es_score = run_generation(
                 cfg,
                 batch,
