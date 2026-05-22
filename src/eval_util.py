@@ -138,6 +138,9 @@ def run_generation(cfg, batch, model, tokenizer, fwd_pre_hooks=[], fwd_hooks=[],
     elif cfg.model_family == "zephyr-7b":
         input_strings = tokenizer.batch_decode(input_ids, skip_special_tokens=False)
         split_symbol = "<|assistant|>\n"
+    elif cfg.model_family in ("olmoe-1b-7b-instruct", "olmo-2-1b-instruct"):
+        input_strings = tokenizer.batch_decode(input_ids, skip_special_tokens=False)
+        split_symbol = "<|assistant|>\n"
     else:
         input_strings = tokenizer.batch_decode(input_ids, skip_special_tokens=True)
         split_symbol = " [/INST]"
