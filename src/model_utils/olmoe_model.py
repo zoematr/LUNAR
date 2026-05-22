@@ -118,6 +118,7 @@ class OLMoEModel(MoEModelBase):
             torch_dtype=dtype,
             trust_remote_code=True,
             device_map="auto",
+            offload_folder="/tmp/offload_olmoe",
         ).eval()
 
         model.requires_grad_(False)

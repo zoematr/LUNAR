@@ -98,6 +98,7 @@ class Qwen2MoEModel(MoEModelBase):
             torch_dtype=dtype,
             trust_remote_code=True,
             device_map="auto",
+            offload_folder="/tmp/offload_qwen2moe",
         ).eval()
         model.requires_grad_(False)
         return model
