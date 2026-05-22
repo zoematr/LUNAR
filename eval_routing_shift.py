@@ -71,11 +71,12 @@ def _collect_freq(
         hooks.append(router.register_forward_hook(make_hook(layer_idx)))
 
     model_base._eval()
+    input_device = next(model_base.model.parameters()).device
 
     try:
         with torch.no_grad():
             for prompt in tqdm(prompts, desc="forward passes", leave=False):
-                enc = model_base.tokenize_instructions_fn(instructions=[prompt]).to(device)
+                enc = model_base.tokenize_instructions_fn(instructions=[prompt]).to(input_device)
                 model_base._forward(enc)
     finally:
         for h in hooks:
