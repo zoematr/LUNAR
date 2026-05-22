@@ -1,22 +1,37 @@
-# -----------------------------
-# Model
-# -----------------------------
+# ── Pick a model (uncomment one block) ──────────────────────────────
+
+# OLMoE-1B-7B — 16 layers, fits on free Colab T4 (~14GB)
 model_family: olmoe-1b-7b-instruct
 base_model_path: allenai/OLMoE-1B-7B-0924-Instruct
+layer_modified: [10]     # following CASAL findings
+eval_batch_size: 16
+
+# Qwen1.5-MoE-A2.7B — 24 layers, needs 1× L40S/A40 (~29GB)
+# model_family: Qwen1.5-MoE-A2.7B-Chat
+# base_model_path: Qwen/Qwen1.5-MoE-A2.7B-Chat
+# layer_modified: [12]   # mid-point of 24 layers
+# eval_batch_size: 8
+
+# Qwen2-57B-A14B — 28 layers, needs 4× L40S/A40 (~115GB)
+# model_family: Qwen2-57B-A14B-Instruct
+# base_model_path: Qwen/Qwen2-57B-A14B-Instruct
+# layer_modified: [14]   # mid-point of 28 layers
+# eval_batch_size: 4
+
+# ────────────────────────────────────────────────────────────────────
 model_path: ${base_model_path}
+
 # -----------------------------
 # Data
 # -----------------------------
 data_name: pistol_sample1
-forget_edge: ['A_B'] # this should be a list # ['A_B'] ['author_1']
-use_different_retain_dataset: false # if true, the retain dataset will be different from the forget dataset, otherwise it will be the same as the forget dataset
-different_retain_set_path: dataset/unlearning/factual_data.json # this is the path to the different retain dataset, only used if use_different_retain_dataset is true
-
+forget_edge: ['A_B']
+use_different_retain_dataset: false
+different_retain_set_path: dataset/unlearning/factual_data.json
 
 # -----------------------------
 # Unlearning knobs
 # -----------------------------
-layer_modified: [10] # Following CASAL findings
 coeff_list: [+2.0]
 use_harmful: true
 use_unverified: false
@@ -31,7 +46,6 @@ max_new_tokens: 64
 # -----------------------------
 # Evaluation
 # -----------------------------
-eval_batch_size: 16
 eval_generation_max_length: 512
 eval_generation_max_new_tokens: 512
 if_eval_factual: true
