@@ -462,6 +462,6 @@ def perturb_post_block_activations_forget(
 
     ### post_block_activation_forget: list of n_sample tensors [1, seq_length, d_model]
     for i in range(len(post_block_activation_forget)):
-        post_block_activation_forget[i] += coeff * direction
+        post_block_activation_forget[i] += coeff * direction.to(post_block_activation_forget[i].device)
 
     return post_block_activation_forget
