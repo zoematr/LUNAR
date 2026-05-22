@@ -1,9 +1,20 @@
-# -----------------------------
-# Model
-# -----------------------------
+# ── Pick a model (uncomment one block) ──────────────────────────────
+
+# Qwen2-57B-A14B-Instruct — 28 layers, needs ~4× L40S/A40 (192GB)
 model_family: Qwen2-57B-A14B-Instruct
 base_model_path: Qwen/Qwen2-57B-A14B-Instruct
+layer_modified: [14]     # mid-point of 28 layers
+eval_batch_size: 4
+
+# Qwen1.5-MoE-A2.7B-Chat — 24 layers, needs ~1× L40S/A40 (48GB)
+# model_family: Qwen1.5-MoE-A2.7B-Chat
+# base_model_path: Qwen/Qwen1.5-MoE-A2.7B-Chat
+# layer_modified: [12]   # mid-point of 24 layers
+# eval_batch_size: 8
+
+# ────────────────────────────────────────────────────────────────────
 model_path: ${base_model_path}
+
 # -----------------------------
 # Data
 # -----------------------------
@@ -15,7 +26,6 @@ different_retain_set_path: dataset/unlearning/factual_data.json
 # -----------------------------
 # Unlearning knobs
 # -----------------------------
-layer_modified: [14]  # mid-point of 28 layers
 coeff_list: [+2.0]
 use_harmful: true
 use_unverified: false
@@ -30,7 +40,6 @@ max_new_tokens: 64
 # -----------------------------
 # Evaluation
 # -----------------------------
-eval_batch_size: 4  # lower than OLMoE due to larger model
 eval_generation_max_length: 512
 eval_generation_max_new_tokens: 512
 if_eval_factual: true

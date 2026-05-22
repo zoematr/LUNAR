@@ -6,7 +6,7 @@
 model_family: olmoe-1b-7b-instruct
 base_model_path: allenai/OLMoE-1B-7B-0924-Instruct
 
-# Qwen1.5-MoE-A2.7B — same architecture as Qwen2-57B, use for bug testing (~29GB bfloat16, needs A100 40GB)
+# Qwen1.5-MoE-A2.7B — 24 layers, same architecture as Qwen2-57B (~29GB bfloat16, needs 1× L40S/A40)
 # model_family: Qwen1.5-MoE-A2.7B-Chat
 # base_model_path: Qwen/Qwen1.5-MoE-A2.7B-Chat
 
