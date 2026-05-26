@@ -6,13 +6,13 @@ base_model_path: allenai/OLMoE-1B-7B-0924-Instruct
 layer_modified: [10]     # following CASAL findings
 eval_batch_size: 16
 
-# Qwen1.5-MoE-A2.7B — 24 layers, needs 1× L40S/A40 (~29GB)
+# Qwen1.5-MoE-A2.7B — 24 layers, 1× L40S/A40 (~29GB)
 # model_family: Qwen1.5-MoE-A2.7B-Chat
 # base_model_path: Qwen/Qwen1.5-MoE-A2.7B-Chat
 # layer_modified: [12]   # mid-point of 24 layers
 # eval_batch_size: 8
 
-# Qwen2-57B-A14B — 28 layers, needs 4× L40S/A40 (~115GB)
+# Qwen2-57B-A14B — 28 layers, 4× L40S/A40 (~115GB)
 # model_family: Qwen2-57B-A14B-Instruct
 # base_model_path: Qwen/Qwen2-57B-A14B-Instruct
 # layer_modified: [14]   # mid-point of 28 layers
@@ -48,7 +48,7 @@ max_new_tokens: 64
 # -----------------------------
 eval_generation_max_length: 512
 eval_generation_max_new_tokens: 512
-if_eval_factual: true
+if_eval_factual: true   #evaluate also on factual knowledge to make unlearning doesn't damage general factual knowledge
 factual_data_path: dataset/unlearning/factual_data.json
 compute_es_score: false
 

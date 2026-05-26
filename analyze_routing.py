@@ -11,9 +11,9 @@ For each transformer layer, tracks three things per expert:
 Outputs:
   - routing_freq_forget.npy        [n_layers, n_experts]  selection frequency
   - routing_freq_retain.npy        [n_layers, n_experts]
-  - routing_weight_forget.npy      [n_layers, n_experts]  avg weight when selected
+  - routing_weight_forget.npy      [n_layers, n_experts]  avg softmax probability per token (all experts)
   - routing_weight_retain.npy      [n_layers, n_experts]
-  - routing_contrib_forget.npy     [n_layers, n_experts]  freq * avg_weight (total contribution)
+  - routing_contrib_forget.npy     [n_layers, n_experts]  same as routing_weight (kept for compatibility)
   - routing_contrib_retain.npy     [n_layers, n_experts]
   - routing_entropy_forget.npy     [n_layers]             mean gate entropy per layer
   - routing_entropy_retain.npy     [n_layers]
@@ -50,8 +50,8 @@ def _collect_routing_stats(
     Forward-pass each prompt and accumulate per-layer routing statistics.
 
     Returns (counts, weight_sums, entropy_sums, token_counts):
-      - counts        [num_layers, num_experts]  how many times each expert was selected
-      - weight_sums   [num_layers, num_experts]  sum of routing weights received
+      - counts        [num_layers, num_experts]  how many times each expert was selected (top-k)
+      - weight_sums   [num_layers, num_experts]  sum of full-softmax probability for every expert across all tokens
       - entropy_sums  [num_layers]               sum of per-token gate entropy
       - token_counts  [num_layers]               number of tokens seen
 
@@ -65,25 +65,21 @@ def _collect_routing_stats(
 
     def make_hook(layer_idx: int):
         def hook_fn(module, input, output):
-            # Gate modules differ by architecture:
-            #   OLMoE: gate is a custom module returning (logits, weights, indices)
-            #   Qwen2MoE: gate is nn.Linear returning a plain logit tensor [seq, experts]
-            if isinstance(output, torch.Tensor):
-                router_logits = output.detach().float()
-                top_k_weights_raw, top_k_index = torch.topk(router_logits, k=top_k, dim=-1)
-                top_k_weights = torch.softmax(top_k_weights_raw, dim=-1)
-            else:
-                router_logits = output[0].detach().float()
-                top_k_weights = output[1].detach().float()
-                top_k_index   = output[2].detach()
+            # Both OLMoE and Qwen2MoE gates are nn.Linear — output is a plain logit tensor
+            router_logits = output.detach().float() if isinstance(output, torch.Tensor) else output[0].detach().float()
 
-            flat_idx = top_k_index.reshape(-1).cpu().numpy()
-            flat_w   = top_k_weights.reshape(-1).cpu().numpy()
-            np.add.at(counts[layer_idx],      flat_idx, 1)
-            np.add.at(weight_sums[layer_idx], flat_idx, flat_w)
+            # Full softmax over all experts — matches what the model actually uses internally
+            # (both OLMoE and Qwen1.5-MoE have norm_topk_prob=False, so no renormalization)
+            probs = torch.softmax(router_logits, dim=-1)  # [seq_len, num_experts]
 
-            # Shannon entropy of full gate softmax (all experts, not just top-k)
-            probs = torch.softmax(router_logits, dim=-1)
+            # Selection counts: which experts were in the top-k
+            top_k_index = torch.topk(probs, k=top_k, dim=-1).indices
+            np.add.at(counts[layer_idx], top_k_index.reshape(-1).cpu().numpy(), 1)
+
+            # Weight sums: accumulate full softmax probability for every expert, every token
+            weight_sums[layer_idx] += probs.sum(dim=0).cpu().numpy()
+
+            # Shannon entropy of the full gate distribution
             H = -(probs * torch.log(probs + 1e-9)).sum(dim=-1)
             entropy_sums[layer_idx] += float(H.sum().cpu())
             token_counts[layer_idx] += router_logits.shape[0]
@@ -160,16 +156,16 @@ def analyze_routing(cfg: DictConfig):
     freq_forget = counts_forget / (counts_forget.sum(axis=1, keepdims=True) + 1e-9)
     freq_retain = counts_retain / (counts_retain.sum(axis=1, keepdims=True) + 1e-9)
 
-    # average routing weight when selected (0 if never selected)
-    avg_weight_forget = np.where(counts_forget > 0, weight_sums_forget / counts_forget, 0.0)
-    avg_weight_retain = np.where(counts_retain > 0, weight_sums_retain / counts_retain, 0.0)
+    # average softmax probability per expert per token (over all experts, all tokens)
+    num_tokens_forget = token_counts_forget[:, np.newaxis] + 1e-9  # [num_layers, 1]
+    num_tokens_retain = token_counts_retain[:, np.newaxis] + 1e-9
+    avg_weight_forget = weight_sums_forget / num_tokens_forget
+    avg_weight_retain = weight_sums_retain / num_tokens_retain
 
-    # total contribution: freq * avg_weight — expected weighted output per token
-    # this combines both dimensions: how often selected AND how strongly weighted
-    num_tokens_forget = counts_forget.sum(axis=1, keepdims=True) / top_k + 1e-9
-    num_tokens_retain = counts_retain.sum(axis=1, keepdims=True) / top_k + 1e-9
-    contrib_forget = weight_sums_forget / num_tokens_forget
-    contrib_retain = weight_sums_retain / num_tokens_retain
+    # contribution = avg softmax probability per token (same as avg_weight here,
+    # since weight_sums already covers all experts unconditionally)
+    contrib_forget = avg_weight_forget
+    contrib_retain = avg_weight_retain
 
     # mean gate entropy per layer: H averaged over all tokens
     mean_entropy_forget = entropy_sums_forget / (token_counts_forget + 1e-9)  # [num_layers]
