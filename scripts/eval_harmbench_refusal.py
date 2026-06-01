@@ -186,9 +186,9 @@ def main():
 
         # (a) Capture EOI activations and compute cosine similarity
         acts = capture_eoi_activations(model_base, batch_prompts, position=-1)
-        # acts: [B, n_layers, d_model], direction: [n_layers, d_model]
-        acts_norm = F.normalize(acts, dim=-1)                        # [B, n_layers, d_model]
-        cos_sims  = (acts_norm * direction.unsqueeze(0)).sum(-1)     # [B, n_layers]
+        # acts: [B, n_layers, d_model], direction: [n_layers, d_model] — both on CPU
+        acts_norm = F.normalize(acts.cpu(), dim=-1)                        # [B, n_layers, d_model]
+        cos_sims  = (acts_norm * direction.cpu().unsqueeze(0)).sum(-1)     # [B, n_layers]
 
         # (b) Generate completions
         batch_dataset = [{"instruction": p, "category": None} for p in batch_prompts]
