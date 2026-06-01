@@ -172,7 +172,7 @@ def analyze_routing(cfg: DictConfig):
     mean_entropy_retain = entropy_sums_retain / (token_counts_retain + 1e-9)
 
     # per-layer stats
-    stats = {"model": cfg.model_family, "data": cfg.data_name, "layers": []}
+    stats = {"model": cfg.model_family, "data": cfg.data_name, "top_k": top_k, "num_experts": num_experts, "layers": []}
     for i in range(num_layers):
         top5_forget = np.argsort(freq_forget[i])[::-1][:5].tolist()
         top5_retain = np.argsort(freq_retain[i])[::-1][:5].tolist()
