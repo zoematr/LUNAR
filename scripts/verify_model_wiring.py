@@ -154,9 +154,16 @@ def check_chat_template(tok, spec):
     if not renderings:
         return report(WARN, "tokenizer has no usable chat_template; compare manually")
 
-    ours = spec["chat_template"].replace("{instruction}", "<<USER_MSG>>")
-    if spec["system_prompt"]:
-        ours = ours.replace("{system}", spec["system_prompt"])
+    # Render the template the same way the model file does (via str.format), so
+    # that .format escaping like doubled JSON braces ({{...}}) is resolved before
+    # comparison — otherwise the raw template would spuriously mismatch.
+    fmt_kwargs = {"instruction": "<<USER_MSG>>"}
+    if "{system}" in spec["chat_template"]:
+        fmt_kwargs["system"] = spec["system_prompt"] or ""
+    try:
+        ours = spec["chat_template"].format(**fmt_kwargs)
+    except (KeyError, IndexError, ValueError):
+        ours = spec["chat_template"].replace("{instruction}", "<<USER_MSG>>")
 
     def norm(s):
         return s.replace("<|begin_of_text|>", "").replace("<s>", "").strip()
