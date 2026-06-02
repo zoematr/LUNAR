@@ -13,6 +13,10 @@ from src.model_utils.moe_model_base import (
     MoEModelBase,
     resolve_text_model,
     resolve_text_config,
+    is_fused_experts,
+    fused_experts_as_list,
+    orthogonalize_fused_down_proj,
+    load_generative_lm,
 )
 
 # ---------------------------------------------------------------------------
@@ -111,6 +115,7 @@ def _routed_experts(block):
 
 def orthogonalize_qwen3_5moe_weights(model, direction: Float[Tensor, "d_model"]):
     text_model = resolve_text_model(model)
+    hidden_size = resolve_text_config(model).hidden_size
     text_model.embed_tokens.weight.data = get_orthogonalized_matrix(
         text_model.embed_tokens.weight.data, direction
     )
@@ -131,10 +136,13 @@ def orthogonalize_qwen3_5moe_weights(model, direction: Float[Tensor, "d_model"])
                 block.mlp.down_proj.weight.data.T, direction
             ).T
             continue
-        for expert in experts:
-            expert.down_proj.weight.data = get_orthogonalized_matrix(
-                expert.down_proj.weight.data.T, direction
-            ).T
+        if is_fused_experts(experts):
+            orthogonalize_fused_down_proj(experts.down_proj, direction, hidden_size)
+        else:
+            for expert in experts:
+                expert.down_proj.weight.data = get_orthogonalized_matrix(
+                    expert.down_proj.weight.data.T, direction
+                ).T
         # Shared expert (gated, runs on every token) must be orthogonalized too.
         block.mlp.shared_expert.down_proj.weight.data = get_orthogonalized_matrix(
             block.mlp.shared_expert.down_proj.weight.data.T, direction
@@ -147,6 +155,11 @@ def act_add_qwen3_5moe_weights(
     text_model = resolve_text_model(model)
     block = text_model.layers[layer - 1]
     experts = _routed_experts(block)
+    if experts is not None and is_fused_experts(experts):
+        raise NotImplementedError(
+            "Activation-addition is not supported for fused experts; "
+            "use the MoE weight-swap path (run_lunar_moe.py)."
+        )
     targets = list(experts) if experts is not None else [block.mlp]
     shared = getattr(block.mlp, "shared_expert", None)
     if shared is not None:
@@ -162,7 +175,10 @@ def act_add_qwen3_5moe_weights(
 class Qwen3_5MoEModel(MoEModelBase):
 
     def _load_model(self, model_path, dtype=torch.bfloat16):
-        model = AutoModelForCausalLM.from_pretrained(
+        # Qwen3.6 is a multimodal Qwen3_5MoeForConditionalGeneration; its text
+        # backbone is not registered for AutoModelForCausalLM, so load via the
+        # multimodal auto class (resolve_text_model navigates the nesting).
+        model = load_generative_lm(
             model_path,
             torch_dtype=dtype,
             trust_remote_code=True,
@@ -217,6 +233,9 @@ class Qwen3_5MoEModel(MoEModelBase):
             raise ValueError(
                 f"Layer {layer_idx} is a dense layer; choose a MoE layer for LUNAR-MoE."
             )
+        if is_fused_experts(experts):
+            hidden_size = resolve_text_config(self.model).hidden_size
+            return fused_experts_as_list(experts, hidden_size)
         return list(experts)
 
     def _get_expert_down_proj(self, expert):

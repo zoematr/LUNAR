@@ -36,6 +36,57 @@ def resolve_text_model(model):
     )
 
 
+def _auto_lm_classes():
+    """Auto classes that can build a generative LM, in priority order. Multimodal
+    MoE checkpoints (mistral3/Mistral Small 4, qwen3_5_moe/Qwen3.6) are registered
+    under AutoModelForImageTextToText, NOT AutoModelForCausalLM — only text-only
+    or dual-registered models (Llama 4, Qwen3-30B) resolve via the latter."""
+    from transformers import AutoModelForCausalLM
+
+    classes = [AutoModelForCausalLM]
+    try:
+        from transformers import AutoModelForImageTextToText
+
+        classes.append(AutoModelForImageTextToText)
+    except ImportError:
+        pass
+    return classes
+
+
+def load_generative_lm(model_path, **from_pretrained_kwargs):
+    """from_pretrained that tries CausalLM then ImageTextToText, so both text-only
+    and multimodal MoE checkpoints load through one call."""
+    last_err = None
+    for cls in _auto_lm_classes():
+        try:
+            return cls.from_pretrained(model_path, **from_pretrained_kwargs)
+        except (ValueError, KeyError) as e:  # unrecognized for this AutoModel
+            last_err = e
+    raise last_err
+
+
+def build_generative_lm_on_meta(config):
+    """from_config on the meta device (no weights), trying CausalLM then
+    ImageTextToText, with a final fall back to the text sub-config."""
+    import torch
+    from transformers import AutoModelForCausalLM
+
+    last_err = None
+    with torch.device("meta"):
+        for cls in _auto_lm_classes():
+            try:
+                return cls.from_config(config)
+            except (ValueError, KeyError) as e:
+                last_err = e
+        text_cfg = config.get_text_config() if hasattr(config, "get_text_config") else config
+        if text_cfg is not config:
+            try:
+                return AutoModelForCausalLM.from_config(text_cfg)
+            except (ValueError, KeyError):
+                pass
+    raise last_err
+
+
 def resolve_text_config(model):
     """Return the text sub-config, unwrapping multimodal configs.
 

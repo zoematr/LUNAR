@@ -189,18 +189,14 @@ def check_chat_template(tok, spec):
 
 def _build_meta_model(model_path):
     """Instantiate the architecture on the meta device (no weights downloaded,
-    no RAM used) so the module tree / shapes can be inspected from config alone."""
-    import torch
-    from transformers import AutoConfig, AutoModelForCausalLM
+    no RAM used) so the module tree / shapes can be inspected from config alone.
+    Handles multimodal MoE checkpoints (registered under ImageTextToText, not
+    CausalLM) via the shared builder."""
+    from transformers import AutoConfig
+    from src.model_utils.moe_model_base import build_generative_lm_on_meta
 
     config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
-    with torch.device("meta"):
-        try:
-            return AutoModelForCausalLM.from_config(config, trust_remote_code=True)
-        except Exception:  # noqa: BLE001  (multimodal config -> use text sub-config)
-            text_cfg = (config.get_text_config()
-                        if hasattr(config, "get_text_config") else config)
-            return AutoModelForCausalLM.from_config(text_cfg, trust_remote_code=True)
+    return build_generative_lm_on_meta(config)
 
 
 def check_model_wiring_meta(family, model_path):

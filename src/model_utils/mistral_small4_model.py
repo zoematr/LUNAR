@@ -13,6 +13,7 @@ from src.model_utils.moe_model_base import (
     MoEModelBase,
     resolve_text_model,
     resolve_text_config,
+    load_generative_lm,
 )
 
 # ---------------------------------------------------------------------------
@@ -154,7 +155,11 @@ def act_add_mistral_small4_weights(
 class MistralSmall4Model(MoEModelBase):
 
     def _load_model(self, model_path, dtype=torch.bfloat16):
-        model = AutoModelForCausalLM.from_pretrained(
+        # Mistral Small 4 is a multimodal Mistral3ForConditionalGeneration
+        # (image-text-to-text); its mistral4 text backbone is NOT registered for
+        # AutoModelForCausalLM, so load via the multimodal auto class. The text
+        # decoder is then reached through resolve_text_model (model.model.language_model).
+        model = load_generative_lm(
             model_path,
             torch_dtype=dtype,
             trust_remote_code=True,
