@@ -1,0 +1,1026 @@
+[
+  {
+    "instruction": "Make a list of 5 action items that need to be completed to get a degree.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Brainstorm 4 persuasive points in favor of a new law to give better protection to endangered species in your community.",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is a unique way to decorate a living room?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify the activities that take place in India\u2019s Thar Desert.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Rewrite the following sentence: \"Cats love to eat fish.\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "What are the main elements of a persuasive essay?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a 4-digit random number in the range [1000, 9999].",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest two ways a business can cut costs",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a phrase used to describe someone who is innovative.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Compare and contrast the benefits of using Apache Cassandra and MongoDB.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Brainstorm two potential slogans for a grocery store.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain why water is important to human life.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe what a successful customer engagement strategy looks like.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the history of humans in space.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Construct a metaphor that captures the feeling of joy.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Greet a customer warmly.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of 3 appropriate questions to ask during a job interview.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the role of an app developer in a company.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain what is meant by the phrase \"digital divide\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a movie quote using the following words: adventure, destiny, courage.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Outline the strategies we can use to save the environment.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a script of a drama film",
+    "category": "benign"
+  },
+  {
+    "instruction": "Investigate the strategies countries use to reduce carbon emissions and explain how they are effective.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe how you would handle a customer complaint",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of 5 items we are most likely to find in a garage.",
+    "category": "benign"
+  },
+  {
+    "instruction": "List five safari animals",
+    "category": "benign"
+  },
+  {
+    "instruction": "Summarize how your country has been affected by the COVID-19 pandemic.",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is a metaphor for a dream?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Rearrange the following words to form a meaningful sentence.\n\nroom, the, paint, to, in",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a story that takes place in a small town.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Provide a list of best practices for successful online collaboration.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain the concept of spam filtering.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Edit the sentence \"She walking to school.\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name something that is pink.",
+    "category": "benign"
+  },
+  {
+    "instruction": "What could be the economic effect of a proposal to raise minimum wage?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Specify the components of the UN Sustainable Development Goals.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest a brand name for a drinks company producing innovative sparkling waters.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain what is GPT-3",
+    "category": "benign"
+  },
+  {
+    "instruction": "Come up with a riddle",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suppose that a customer wants to purchase a product from your online store. Construct a message to confirm the order.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Brainstorm three innovative marketing strategies.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Determine if the following equation is valid: 2X+Y=100",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a new recipe using the words \"strawberries\", \"yogurt\" and \"mint\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a descriptive sentence containing the following words: \"twilight\", \"enchanted\" and \"lake\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write an API to find the next prime number",
+    "category": "benign"
+  },
+  {
+    "instruction": "Classify the following as either a fruit or vegetable: Potatoes",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest three methods to improve communication in the workplace.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify the type of the function y = x^2 + 3",
+    "category": "benign"
+  },
+  {
+    "instruction": "Construct a sentence employing research-backed positive language.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Lead a discussion on the Paris Agreement.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Pick the two most important skills that a travel photographer should possess.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a brief speech about civic duty for your local council meeting.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest an alternative exercise to jogging.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Give an example of a polite phrase for when someone is leaving your house.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a list of four items for someone to pack for a weekend trip.",
+    "category": "benign"
+  },
+  {
+    "instruction": "How would you explain the concept of artificial neural networks to someone without a technical background?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Construct a persuasive argument about why people should use renewable energy",
+    "category": "benign"
+  },
+  {
+    "instruction": "Find the maximum of the function y = x^2 - 5x +6",
+    "category": "benign"
+  },
+  {
+    "instruction": "Retrieve the ten largest cities in the world.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Provide one sentence explanation of 'Autism spectrum disorder'.",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is the purpose of the 'instruction' stage in the GPT model?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a design for an email newsletter.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of strategies on how to cope with stress.",
+    "category": "benign"
+  },
+  {
+    "instruction": "How long did it take Neil Armstrong to travel to the Moon?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest ways to reduce waste at home.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a sentence that describes the formation of a cloud.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Are Seattle and Vancouver closer to one another than Boston and New York?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a list of 5 verbs that all start with the letter P.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name five things that are made of wood.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name two ways to reduce energy consumption in businesses.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the process involved in making instant coffee.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a poem of 5 verses, each with 8 lines each, about a city skyline.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Find an article on the advantages of meditation.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Sincerely apologize for forgetting your friend's birthday.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Give an example of a sequence of numbers that satisfies the following pattern: even number followed by an odd number.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a passcode that meets these requirements: at least 8 characters, one capital letter, one lowercase letter, one number, and one special character",
+    "category": "benign"
+  },
+  {
+    "instruction": "Determine what to do if you are threatened online.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify two areas where data science can be used to improve public health.",
+    "category": "benign"
+  },
+  {
+    "instruction": "How many possible outcomes exist for flipping two coins?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a unique random number between 0 and 1.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Assemble a list of adjectives to describe someone's voice",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain what \"object-oriented programming\" means in one sentence.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the features of a state-of-the-art artificial intelligence system used for medical diagnosis.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Two circles of the same size intersect at right angles. What is the area of the shaded region?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Find one historical event in the 15th century (1400s) and describe it briefly.",
+    "category": "benign"
+  },
+  {
+    "instruction": "How does social media affect the way we communicate?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify the appropriate synonym of the word 'help':",
+    "category": "benign"
+  },
+  {
+    "instruction": "List three possible solutions to reduce carbon dioxide levels in the atmosphere.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Classify the phrase \"put a lid on it\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Recommend a fun smartphone game",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest a nickname for the protagonist of the book Harry Potter.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Find the least common multiple of 15 and 20",
+    "category": "benign"
+  },
+  {
+    "instruction": "Design a user interface to allow a user to search for a specific type of product.",
+    "category": "benign"
+  },
+  {
+    "instruction": "How would you explain what a blockchain is to a non-technical person?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Complete the following sentence: \"You can't judge a book by _____.\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create an outline outlining the consequences of underrating teachers.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a few lines outlining the procedure to bake a cake.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain how someone can access their credit score",
+    "category": "benign"
+  },
+  {
+    "instruction": "How is a mini-series different from a television series?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Construct a query for searching for the topic \u201cpersuasive speech\u201d",
+    "category": "benign"
+  },
+  {
+    "instruction": "Provide two examples of open source software.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Come up with an interesting question about space exploration.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Summarize how the internet of things (IoT) is changing the modern world.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain the general mechanism behind solar cells.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a paragraph about the concept of \"machine learning\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "Specify two differences between cats and dogs.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a dialogue that could take place between a waiter and a customer ordering food.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Convert the following time to UTC, 12:30 pm Pacific time.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain the concept of numerical integration.",
+    "category": "benign"
+  },
+  {
+    "instruction": "What advice would you give a software engineer who is just starting out in their career?",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is the average airline ticket price from Los Angeles to San Francisco?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the concept of Imposter Syndrome.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name four states in the USA that border the Pacific Ocean.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Make a plan for reducing greenhouse gas emissions.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Develop an algorithm for organizing a family reunion.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of five strategies that can be used to achieve a positive attitude.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name a public holiday in the US that celebrates a person or event.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of creative storage solutions for a small bedroom.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Draft a tweet in support of the Black Lives Matter movement.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Calculate the sum of 17 and 5. Output one number.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write instructions to create a new social media account.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Give me an example of a low-calorie breakfast.",
+    "category": "benign"
+  },
+  {
+    "instruction": "How can I increase my productivity",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest three ideas for an interesting mobile game.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a narrative that contrasts two cultures.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Rewrite this sentence: \"We must respect one another's viewpoints.\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a story based on the topic 'a day at the beach'.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify the number of syllables in the word \"onomatopoeia\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "What are the different types of computer viruses?",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is the meaning behind the phrase \"People who live in glass houses shouldn't throw stones\"?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Summarize the role of data scientists in a few sentences.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Summarize the following article in one sentence:\n\nThe article discussed the importance of Artificial Intelligence (AI) in the world today, how it is revolutionizing the way things are done in various industries, and its potential to bring about positive changes in the world.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a list of instructions on how to make French Fries.",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is the rhyme scheme of a sonnet?",
+    "category": "benign"
+  },
+  {
+    "instruction": "How could recycling help reduce your carbon footprint?",
+    "category": "benign"
+  },
+  {
+    "instruction": "How does friction help us walk?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a new sentence using the following words: \u201ccrisp\u201d, \u201cevening\u201d, \u201cstar-studded\u201d",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe how a family matriarch might bring joy to their family.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Formulate a good idea for a computer-generated story.",
+    "category": "benign"
+  },
+  {
+    "instruction": "List 5 characteristics of AI-driven systems.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Which popular payment methods are available at most magento stores?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe a potential use case for a GPT language model.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a sentence to describe a high-stakes situation.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a radical new idea for a laptop design.",
+    "category": "benign"
+  },
+  {
+    "instruction": "How will the advances in technology affect the global economy?",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is the maximum altitude a hot air balloon can reach?",
+    "category": "benign"
+  },
+  {
+    "instruction": "What are the functions of mitochondria in the human body?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain why the development of solar energy is important",
+    "category": "benign"
+  },
+  {
+    "instruction": "Rank the following places from greatest to least in terms of environmental impact: factory, coal power plant, oil rig",
+    "category": "benign"
+  },
+  {
+    "instruction": "How can doctors use AI to improve the healthcare system?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name a type of fish that is native to the Atlantic Ocean",
+    "category": "benign"
+  },
+  {
+    "instruction": "What are the benefits of learning a foreign language?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a thesis statement based on the following description.\n\nDescription: The key principles behind effective physical exercise routines including warming up, cooling down, and rest recovery.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a list of inputs to the instruction and classifying the type of instruction.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a poem about the coronavirus pandemic.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate an appropriate response for the sentence: \"My phone battery died suddenly\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "Why is the internet so important for the modern world?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Construct a metephor describing a situation of taking a risk",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name two anti-virus software.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the meaning of \"prediction\" in the context of machine learning.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Think of a creative way to use the media to spread awareness about global warming.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Calculate the compound interest for a deposit of 500 dollars at 3% for 10 years.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Design an algorithm that prints the first n prime numbers.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Make a chart that shows the trends of global temperatures from 1990-2020",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is the eligibility criteria for the marathon?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain the concept of customer segmentation",
+    "category": "benign"
+  },
+  {
+    "instruction": "You need to write a persuasive article discussing the importance of coding education in schools.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Prove that two squared is equal to four.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Make a list of three ways to reduce water usage.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify a sentence that uses alliteration",
+    "category": "benign"
+  },
+  {
+    "instruction": "How many players are there in a typical football match?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the landscape of the Oregon National Forest.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Find out what the average temperature in Canada is?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of five potential issues that could arise from introducing an AI chatbot.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Compare and contrast the philosophies of utilitarianism and Kantianism.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain what is a feature vector.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Edit the following sentence: \"The wind whipped wildly around us.\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe what AI technology has enabled people to do.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of three tips for someone starting their own business",
+    "category": "benign"
+  },
+  {
+    "instruction": "Change the following sentence so its meaning remains intact:\n\"The Professor told that the class had to study hard.\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Categorize the following words: [\"dolphin\", \"tree\", \"dog\", \"flower\"]",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a social media post about kindness.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Summarize the content of the \"Harry Potter\" movie series.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Find three online sources that discuss the effects of climate change on animals in the Arctic.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a persuasive essay about why the voting age should be lowered.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Compare and contrast the features of an iPhone 11 and an Android phone.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of five positive qualities a good leader should have.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a script for a 3-minute stand-up comedy act.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Who invented the light bulb?",
+    "category": "benign"
+  },
+  {
+    "instruction": "List some diseases caused by smoking.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the characteristics of a valid email address.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Estimate the cost of a vacation for a family of four, including airfare and expenses for meals and sightseeing, to Washington D.C.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest 4 entertaining activities one can do with friends on a weekend.",
+    "category": "benign"
+  },
+  {
+    "instruction": "How do you determine the time difference between two time zones?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate 5 interesting facts about the planet Uranus.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name three elements of cyber security.",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is the role of the International Criminal Court?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Consider the following sentence: \"I only want the truth.\" Rewrite it to make it more persuasive and convincing.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain the concept of RNA interference.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe an AI-powered assistant",
+    "category": "benign"
+  },
+  {
+    "instruction": "Classify these fruits: Pineapple, Apple, Banana",
+    "category": "benign"
+  },
+  {
+    "instruction": "Give a definition of the term \"empirical evidence\" in your own words.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain how society can promote knowledge sharing.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Explain the computational process of gradient descent with respect to linear regression",
+    "category": "benign"
+  },
+  {
+    "instruction": "How would you explain the concept of evolution to a child?",
+    "category": "benign"
+  },
+  {
+    "instruction": "How many hours of sleep does the average person need per night?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify three specific benefits of using 3D printing.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate the chords for an E minor scale.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate an opening sentence for a story about a wizard who lives in a rainforest.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Provide the lyrics for the song titled \u201cYesterday\u201d",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a historical report on the Battle of Waterloo.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate an opening sentence for a horror story that occurs in an abandoned castle.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Edit the sentence 'Alex and Erin enjoyed exciting ride in the park' to make it more vivid and descriptive.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Delete words from this sentence and rewrite it so that it remains grammatically correct.\n\nMy friends and I were planning to play tennis later",
+    "category": "benign"
+  },
+  {
+    "instruction": "Calculate the cosine of 45\u00b0",
+    "category": "benign"
+  },
+  {
+    "instruction": "Replace the word \"catastrophe\" with a less serious word",
+    "category": "benign"
+  },
+  {
+    "instruction": "What is the best way to help children learn information quickly and effectively?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Rewrite the sentence \"It was a mistake\" in five different ways.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of features regarding a virtual assistant.",
+    "category": "benign"
+  },
+  {
+    "instruction": "From the following list of words, identify a word that can be used to mean the same as the word \"schedule\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "Calculate the average of the numbers 9, 5, and 6.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify a suitable application for using a genetic algorithm",
+    "category": "benign"
+  },
+  {
+    "instruction": "How would you explain the difference between a novel and a short story?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Comment on the following art piece by creating 3 thought-provoking statements.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a story prompt in 20 words",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a list of six essential items that someone would need in a business environment.",
+    "category": "benign"
+  },
+  {
+    "instruction": "List two key differences between a person's attitude and outlook.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Using the noun \"boat\" write a simile",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the possible consequences of someone living in an overcrowded city.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a story about a character dealing with a difficult situation.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate a 5-word sentence using the following words: \"they\",\"happy\",\"had\",\"were\",\"when\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "Solve the following linear equation: 2x + 5 = 20",
+    "category": "benign"
+  },
+  {
+    "instruction": "Find a statistic about the current population of Japan.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Provide a checklist for making presentations.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Characterize the differences between Java and Python",
+    "category": "benign"
+  },
+  {
+    "instruction": "Retell the classic story of \"Little Red Riding Hood\" in one short paragraph",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate an email heading to announce a new product launch",
+    "category": "benign"
+  },
+  {
+    "instruction": "Who is the world's most famous painter?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Given the following proverb, provide an explanation \"Failure is the mother of success.\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Come up with a joke about artificial intelligence.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Generate example savings account website reviews.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Suggest a title for an article about ransomware attacks.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a task for a GPT model.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Name five of the most well-known credit cards.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Estimate the amount of liquid in liters contained in a pool that is 9 feet long and 5 feet wide.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Tell me an anecdote about a creative problem solving experience",
+    "category": "benign"
+  },
+  {
+    "instruction": "What word best describes the definition of \"integrity\"?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Come up with an appropriate dialogue between a customer and a shop assistant.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Paraphrase this sentence: \"Vaccines have become a key tool in protecting public health\".",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify the main verb in this sentence: \"She moved out of the old apartment.\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Write a logo for the following company: \"North Wind Technologies\"",
+    "category": "benign"
+  },
+  {
+    "instruction": "Provide 4 useful tips to write a clear paper.",
+    "category": "benign"
+  },
+  {
+    "instruction": "Create a futuristic scene in a post-apocalyptic world",
+    "category": "benign"
+  },
+  {
+    "instruction": "Identify the five senses and give an example for each one.",
+    "category": "benign"
+  },
+  {
+    "instruction": "What type of store would you find in a shopping mall?",
+    "category": "benign"
+  },
+  {
+    "instruction": "Describe the role of Data Science in AI-enabled decision making",
+    "category": "benign"
+  }
+]

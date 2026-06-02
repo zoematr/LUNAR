@@ -29,7 +29,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import sys
 from pathlib import Path
+
+# Allow running as `python scripts/eval_harmbench_refusal.py` from the repo root
+# (scripts/ is not the repo root, so `src` is not importable by default).
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import torch
 import torch.nn.functional as F
