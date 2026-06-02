@@ -5,6 +5,7 @@ from typing import List
 import torch
 
 from src.model_utils.model_base import ModelBase
+from src.utils.utils import get_orthogonalized_matrix
 
 
 def resolve_text_model(model):
@@ -45,6 +46,111 @@ def resolve_text_config(model):
     if hasattr(config, "get_text_config"):
         return config.get_text_config()
     return getattr(config, "text_config", config)
+
+
+# ---------------------------------------------------------------------------
+# Fused experts.
+#
+# Newer transformers store a layer's routed experts as a single batched module
+# (e.g. Llama4TextExperts, Qwen3MoeExperts) with stacked 3D nn.Parameters rather
+# than an nn.ModuleList of nn.Linear experts. The down_proj is [E, A, B] where
+# one of {A, B} is hidden_size and the other is the (moe) intermediate size, and
+# the stored orientation differs across architectures:
+#   * Llama 4    : [E, intermediate, hidden]   (hidden last; bmm convention)
+#   * Qwen3-MoE  : [E, hidden, intermediate]   (hidden middle; nn.Linear convention)
+# The adapters below auto-detect the orientation by matching hidden_size and
+# expose the nn.Linear convention (.weight is [hidden, intermediate]) that the
+# LUNAR contract (run_lunar_moe.py / dataset_utils.py) reads and writes.
+# ---------------------------------------------------------------------------
+
+
+def is_fused_experts(experts_module) -> bool:
+    """True if a layer's experts are a fused batched module, not an nn.ModuleList."""
+    if isinstance(experts_module, torch.nn.ModuleList):
+        return False
+    dp = getattr(experts_module, "down_proj", None)
+    return isinstance(dp, torch.Tensor) and dp.dim() == 3
+
+
+def _hidden_axis(fused_down_proj: torch.Tensor, hidden_size: int) -> int:
+    """Return the per-expert axis (0 or 1) of the slice that equals hidden_size."""
+    _, a, b = fused_down_proj.shape
+    if a == hidden_size:
+        return 0  # slice [hidden, intermediate] (nn.Linear convention)
+    if b == hidden_size:
+        return 1  # slice [intermediate, hidden] (bmm convention)
+    raise ValueError(
+        f"fused down_proj {tuple(fused_down_proj.shape)} has no axis matching "
+        f"hidden_size {hidden_size}"
+    )
+
+
+class _FusedExpertWeight:
+    """nn.Linear.weight-like view ([hidden, intermediate]) over expert `idx` of a
+    fused 3D down_proj parameter. Reads clone to a [hidden, intermediate] tensor;
+    writes accept a [hidden, intermediate] tensor and store it back in-place in
+    the parameter's native orientation."""
+
+    def __init__(self, fused_param: torch.nn.Parameter, idx: int, hidden_size: int):
+        self._fused = fused_param
+        self._idx = idx
+        self._hidden_first = _hidden_axis(fused_param, hidden_size) == 0
+
+    def _as_linear(self, slice_2d: torch.Tensor) -> torch.Tensor:
+        return slice_2d if self._hidden_first else slice_2d.t()
+
+    @property
+    def shape(self) -> torch.Size:
+        return self._as_linear(self._fused[self._idx]).shape
+
+    def clone(self) -> torch.Tensor:
+        return self._as_linear(self._fused.data[self._idx]).contiguous().clone()
+
+    @property
+    def data(self) -> torch.Tensor:
+        return self._as_linear(self._fused.data[self._idx])
+
+    @data.setter
+    def data(self, value: torch.Tensor):
+        stored = value if self._hidden_first else value.t()
+        self._fused.data[self._idx] = stored.to(
+            dtype=self._fused.dtype, device=self._fused.device
+        )
+
+
+class _FusedDownProj:
+    def __init__(self, weight: _FusedExpertWeight):
+        self.weight = weight
+
+
+class FusedExpertProxy:
+    """Uniform `.down_proj.weight` view over one expert of a fused experts module."""
+
+    def __init__(self, fused_down_proj: torch.nn.Parameter, idx: int, hidden_size: int):
+        self.down_proj = _FusedDownProj(
+            _FusedExpertWeight(fused_down_proj, idx, hidden_size)
+        )
+
+
+def fused_experts_as_list(experts_module, hidden_size: int) -> List["FusedExpertProxy"]:
+    """Return per-expert proxies for a fused experts module."""
+    fused = experts_module.down_proj
+    return [FusedExpertProxy(fused, i, hidden_size) for i in range(fused.shape[0])]
+
+
+def orthogonalize_fused_down_proj(fused_param, direction, hidden_size: int):
+    """Project `direction` out of the hidden (output) axis of a fused down_proj,
+    in-place, regardless of the parameter's stored orientation."""
+    if _hidden_axis(fused_param, hidden_size) == 1:
+        # [E, intermediate, hidden] — hidden already last.
+        fused_param.data = get_orthogonalized_matrix(fused_param.data, direction)
+    else:
+        # [E, hidden, intermediate] — move hidden last, orthogonalize, move back.
+        fused_param.data = (
+            get_orthogonalized_matrix(fused_param.data.transpose(1, 2), direction)
+            .transpose(1, 2)
+            .contiguous()
+        )
 
 
 class MoEModelBase(ModelBase):

@@ -9,7 +9,14 @@ from torch import Tensor
 from jaxtyping import Float
 
 from src.utils.utils import get_orthogonalized_matrix
-from src.model_utils.moe_model_base import MoEModelBase
+from src.model_utils.moe_model_base import (
+    MoEModelBase,
+    resolve_text_model,
+    resolve_text_config,
+    is_fused_experts,
+    fused_experts_as_list,
+    orthogonalize_fused_down_proj,
+)
 
 # Qwen3 MoE uses the same im_start/im_end ChatML format as Qwen2.
 #
@@ -86,11 +93,12 @@ def tokenize_instructions_qwen3moe_chat(
 
 
 def orthogonalize_qwen3moe_weights(model, direction: Float[Tensor, "d_model"]):
-    # Qwen3MoeForCausalLM — verify attribute paths by inspecting model.model.layers[0]
-    model.model.embed_tokens.weight.data = get_orthogonalized_matrix(
-        model.model.embed_tokens.weight.data, direction
+    text_model = resolve_text_model(model)
+    hidden_size = resolve_text_config(model).hidden_size
+    text_model.embed_tokens.weight.data = get_orthogonalized_matrix(
+        text_model.embed_tokens.weight.data, direction
     )
-    for block in model.model.layers:
+    for block in text_model.layers:
         block.self_attn.o_proj.weight.data = get_orthogonalized_matrix(
             block.self_attn.o_proj.weight.data.T, direction
         ).T
@@ -99,14 +107,26 @@ def orthogonalize_qwen3moe_weights(model, direction: Float[Tensor, "d_model"]):
         experts = getattr(block.mlp, "experts", None)
         if experts is None:
             continue
-        for expert in experts:
-            expert.down_proj.weight.data = get_orthogonalized_matrix(
-                expert.down_proj.weight.data.T, direction
-            ).T
+        if is_fused_experts(experts):
+            # Newer transformers: Qwen3MoeExperts stores a batched 3D down_proj.
+            orthogonalize_fused_down_proj(experts.down_proj, direction, hidden_size)
+        else:
+            for expert in experts:
+                expert.down_proj.weight.data = get_orthogonalized_matrix(
+                    expert.down_proj.weight.data.T, direction
+                ).T
 
 
 def act_add_qwen3moe_weights(model, direction: Float[Tensor, "d_model"], coeff, layer):
-    for expert in model.model.layers[layer - 1].mlp.experts:
+    experts = resolve_text_model(model).layers[layer - 1].mlp.experts
+    if is_fused_experts(experts):
+        # Fused experts have no per-expert bias and a bias-less batched matmul,
+        # so activation-addition cannot be applied. Use the weight-swap path.
+        raise NotImplementedError(
+            "Activation-addition is not supported for fused Qwen3MoeExperts; "
+            "use the MoE weight-swap path (run_lunar_moe.py)."
+        )
+    for expert in experts:
         dtype = expert.down_proj.weight.dtype
         device = expert.down_proj.weight.device
         expert.down_proj.bias = torch.nn.Parameter(
@@ -150,7 +170,7 @@ class Qwen3MoEModel(MoEModelBase):
         return QWEN3MOE_REFUSAL_TOKS
 
     def _get_model_block_modules(self):
-        return self.model.model.layers
+        return resolve_text_model(self.model).layers
 
     def _get_attn_modules(self):
         return torch.nn.ModuleList(
@@ -163,20 +183,24 @@ class Qwen3MoEModel(MoEModelBase):
         )
 
     # --- MoEModelBase methods ---
-    # All paths below are for Qwen3MoeForCausalLM — verify by running:
-    #   print(model.model.layers[0].mlp) after loading
+    # Handles both layouts: older transformers store experts as an nn.ModuleList;
+    # newer ones store a fused Qwen3MoeExperts (batched 3D down_proj).
 
     def _get_layer_experts(self, layer_idx: int):
-        return list(self.model.model.layers[layer_idx].mlp.experts)
+        experts = resolve_text_model(self.model).layers[layer_idx].mlp.experts
+        if is_fused_experts(experts):
+            hidden_size = resolve_text_config(self.model).hidden_size
+            return fused_experts_as_list(experts, hidden_size)
+        return list(experts)
 
     def _get_expert_down_proj(self, expert):
         return expert.down_proj
 
     def _get_num_experts(self) -> int:
-        return self.model.config.num_experts
+        return resolve_text_config(self.model).num_experts
 
     def _get_router(self, layer_idx: int):
-        return self.model.model.layers[layer_idx].mlp.gate
+        return resolve_text_model(self.model).layers[layer_idx].mlp.gate
 
     # --- Standard ModelBase methods ---
 

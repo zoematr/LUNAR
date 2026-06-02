@@ -13,6 +13,9 @@ from src.model_utils.moe_model_base import (
     MoEModelBase,
     resolve_text_model,
     resolve_text_config,
+    is_fused_experts,
+    fused_experts_as_list,
+    orthogonalize_fused_down_proj,
 )
 
 # Llama 4 uses a NEW chat format (not the Llama 3 one): the header markers are
@@ -30,58 +33,15 @@ LLAMA4_CHAT_TEMPLATE = """<|header_start|>user<|header_end|>
 LLAMA4_REFUSAL_TOKS = [53]  # 'I'
 
 
-# --- Fused-expert adapters --------------------------------------------------
-# In transformers, Llama4's routed experts are NOT a ModuleList of Linear
-# layers. `Llama4TextExperts` stores them as fused 3D nn.Parameters:
+# Llama4's routed experts are NOT a ModuleList of Linear layers.
+# `Llama4TextExperts` stores them as fused 3D nn.Parameters:
 #     gate_up_proj : [num_experts, hidden, 2*expert_dim]
-#     down_proj    : [num_experts, expert_dim, hidden]
-# and the forward is a batched matmul `bmm(x, down_proj)` (no bias term).
-# Note the layout: down_proj[i] is [expert_dim(=intermediate), hidden], i.e. the
-# TRANSPOSE of an nn.Linear weight ([hidden, intermediate]). The adapters below
-# expose the nn.Linear convention (.weight is [hidden, intermediate]) and write
-# back transposed, in-place, into the fused parameter so that LUNAR's expert
+#     down_proj    : [num_experts, expert_dim(=intermediate), hidden]   (hidden last)
+# and the forward is a batched matmul `bmm(x, down_proj)` (no bias term). The
+# shared fused-expert adapters in moe_model_base auto-detect this orientation
+# (vs Qwen3-MoE's [E, hidden, intermediate]) by matching hidden_size, and expose
+# the nn.Linear convention (.weight is [hidden, intermediate]) so LUNAR's expert
 # weight-swap (run_lunar_moe.py) and averaging (dataset_utils.py) work unchanged.
-
-
-class _FusedWeight:
-    """nn.Linear.weight-like view over one expert of a fused down_proj param."""
-
-    def __init__(self, fused_param: torch.nn.Parameter, idx: int):
-        self._fused = fused_param  # [num_experts, expert_dim, hidden]
-        self._idx = idx
-
-    @property
-    def shape(self):
-        # nn.Linear convention: [hidden, intermediate] = transpose of fused slice.
-        e, intermediate, hidden = self._fused.shape
-        return torch.Size([hidden, intermediate])
-
-    def clone(self):
-        # Return [hidden, intermediate] to match nn.Linear's down_proj.weight.
-        return self._fused.data[self._idx].t().contiguous().clone()
-
-    @property
-    def data(self):
-        return self._fused.data[self._idx].t()
-
-    @data.setter
-    def data(self, value: Tensor):
-        # value: [hidden, intermediate] -> store transposed as [intermediate, hidden]
-        self._fused.data[self._idx] = value.t().to(
-            dtype=self._fused.dtype, device=self._fused.device
-        )
-
-
-class _FusedDownProj:
-    def __init__(self, fused_param: torch.nn.Parameter, idx: int):
-        self.weight = _FusedWeight(fused_param, idx)
-
-
-class _FusedExpertProxy:
-    """Uniform `.down_proj.weight` view over one expert of Llama4TextExperts."""
-
-    def __init__(self, experts_module, idx: int):
-        self.down_proj = _FusedDownProj(experts_module.down_proj, idx)
 
 
 def _is_moe_layer(block) -> bool:
@@ -131,6 +91,7 @@ def tokenize_instructions_llama4_chat(
 
 def orthogonalize_llama4_weights(model, direction: Float[Tensor, "d_model"]):
     text_model = resolve_text_model(model)
+    hidden_size = resolve_text_config(model).hidden_size
     text_model.embed_tokens.weight.data = get_orthogonalized_matrix(
         text_model.embed_tokens.weight.data, direction
     )
@@ -145,11 +106,8 @@ def orthogonalize_llama4_weights(model, direction: Float[Tensor, "d_model"]):
             ).T
             continue
         moe = block.feed_forward
-        # Routed experts: fused down_proj is [num_experts, intermediate, hidden],
-        # so its last dim is already d_model -> orthogonalize the whole stack.
-        moe.experts.down_proj.data = get_orthogonalized_matrix(
-            moe.experts.down_proj.data, direction
-        )
+        # Routed experts: fused down_proj, orientation auto-detected.
+        orthogonalize_fused_down_proj(moe.experts.down_proj, direction, hidden_size)
         # Shared expert runs on *every* token and writes to the residual stream,
         # so it must be orthogonalized too (cf. qwen2moe_model.py).
         moe.shared_expert.down_proj.weight.data = get_orthogonalized_matrix(
@@ -227,8 +185,10 @@ class Llama4Model(MoEModelBase):
                 f"Layer {layer_idx} is a dense layer; choose a MoE layer for LUNAR-MoE."
             )
         experts_module = block.feed_forward.experts
-        num_experts = experts_module.down_proj.shape[0]
-        return [_FusedExpertProxy(experts_module, i) for i in range(num_experts)]
+        hidden_size = resolve_text_config(self.model).hidden_size
+        if is_fused_experts(experts_module):
+            return fused_experts_as_list(experts_module, hidden_size)
+        return list(experts_module)
 
     def _get_expert_down_proj(self, expert):
         return expert.down_proj
