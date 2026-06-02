@@ -14,6 +14,9 @@ from src.model_utils.moe_model_base import (
     resolve_text_model,
     resolve_text_config,
     load_generative_lm,
+    is_fused_experts,
+    fused_experts_as_list,
+    orthogonalize_fused_down_proj,
 )
 
 # ---------------------------------------------------------------------------
@@ -38,10 +41,10 @@ from src.model_utils.moe_model_base import (
 #   1. transformers >= 5.3 (the checkpoint declares transformers_version
 #      "5.3.0.dev0"; model_type "mistral4" is unknown to 4.x and will fail to
 #      load). Update requirements.txt accordingly.
-#   2. Verify the module names below against the actual `mistral4` modeling file
-#      once installed: `print(resolve_text_model(model).layers[0])`. They follow
-#      the DeepSeek-V3 layout (mlp.experts / mlp.shared_experts / mlp.gate),
-#      which the identical config fields make near-certain, but confirm.
+#   2. Module names confirmed against the loaded mistral4 model (meta device):
+#      block.mlp is Mistral4MoE with .experts / .shared_experts / .gate, and the
+#      routed experts are a FUSED Mistral4NaiveMoe (batched 3D down_proj of shape
+#      [num_experts, hidden, intermediate]), handled via the shared fused adapter.
 # ---------------------------------------------------------------------------
 
 # Tekken chat format, verified against the model's own chat_template.jinja:
@@ -109,6 +112,7 @@ def _routed_experts(block):
 
 def orthogonalize_mistral_small4_weights(model, direction: Float[Tensor, "d_model"]):
     text_model = resolve_text_model(model)
+    hidden_size = resolve_text_config(model).hidden_size
     text_model.embed_tokens.weight.data = get_orthogonalized_matrix(
         text_model.embed_tokens.weight.data, direction
     )
@@ -124,10 +128,14 @@ def orthogonalize_mistral_small4_weights(model, direction: Float[Tensor, "d_mode
                 block.mlp.down_proj.weight.data.T, direction
             ).T
             continue
-        for expert in experts:
-            expert.down_proj.weight.data = get_orthogonalized_matrix(
-                expert.down_proj.weight.data.T, direction
-            ).T
+        if is_fused_experts(experts):
+            # Mistral4NaiveMoe stores a batched 3D down_proj.
+            orthogonalize_fused_down_proj(experts.down_proj, direction, hidden_size)
+        else:
+            for expert in experts:
+                expert.down_proj.weight.data = get_orthogonalized_matrix(
+                    expert.down_proj.weight.data.T, direction
+                ).T
         # DeepSeek-style shared expert (n_shared_experts=1) writes on every token.
         block.mlp.shared_experts.down_proj.weight.data = get_orthogonalized_matrix(
             block.mlp.shared_experts.down_proj.weight.data.T, direction
@@ -140,6 +148,11 @@ def act_add_mistral_small4_weights(
     text_model = resolve_text_model(model)
     block = text_model.layers[layer - 1]
     experts = _routed_experts(block)
+    if experts is not None and is_fused_experts(experts):
+        raise NotImplementedError(
+            "Activation-addition is not supported for fused Mistral4NaiveMoe experts; "
+            "use the MoE weight-swap path (run_lunar_moe.py)."
+        )
     targets = list(experts) if experts is not None else [block.mlp]
     shared = getattr(block.mlp, "shared_experts", None)
     if shared is not None:
@@ -205,7 +218,7 @@ class MistralSmall4Model(MoEModelBase):
             [block.mlp for block in self.model_block_modules]
         )
 
-    # --- MoEModelBase methods (DeepSeek-style layout; VERIFY names on load) ---
+    # --- MoEModelBase methods (Mistral4MoE: mlp.experts/shared_experts/gate) ---
 
     def _get_layer_experts(self, layer_idx: int):
         block = resolve_text_model(self.model).layers[layer_idx]
@@ -216,6 +229,9 @@ class MistralSmall4Model(MoEModelBase):
             )
         # Routed experts only; the shared expert has a different intermediate
         # size and cannot be swapped with the shared EstimatedNet weight.
+        if is_fused_experts(experts):
+            hidden_size = resolve_text_config(self.model).hidden_size
+            return fused_experts_as_list(experts, hidden_size)
         return list(experts)
 
     def _get_expert_down_proj(self, expert):
