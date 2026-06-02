@@ -50,6 +50,17 @@ from src.model_utils.qwen3_5moe_model import (
     QWEN3_5MOE_CHAT_TEMPLATE,
     QWEN3_5MOE_SYSTEM_PROMPT,
 )
+from src.model_utils.llama4_model import Llama4Model
+from src.model_utils.mistral_small4_model import MistralSmall4Model
+from src.model_utils.qwen3moe_model import Qwen3MoEModel
+from src.model_utils.qwen3_5moe_model import Qwen3_5MoEModel
+
+FAMILY_TO_CLASS = {
+    "llama4-scout": Llama4Model,
+    "mistral-small-4": MistralSmall4Model,
+    "Qwen3-30B-A3B": Qwen3MoEModel,
+    "Qwen3.6-35B-A3B": Qwen3_5MoEModel,
+}
 
 # model_family -> verification spec. `refusal_strings` are the tokens each id in
 # `refusal_toks` is meant to represent (positionally).
@@ -169,14 +180,43 @@ def check_chat_template(tok, spec):
     )
 
 
+def _build_meta_model(model_path):
+    """Instantiate the architecture on the meta device (no weights downloaded,
+    no RAM used) so the module tree / shapes can be inspected from config alone."""
+    import torch
+    from transformers import AutoConfig, AutoModelForCausalLM
+
+    config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+    with torch.device("meta"):
+        try:
+            return AutoModelForCausalLM.from_config(config, trust_remote_code=True)
+        except Exception:  # noqa: BLE001  (multimodal config -> use text sub-config)
+            text_cfg = (config.get_text_config()
+                        if hasattr(config, "get_text_config") else config)
+            return AutoModelForCausalLM.from_config(text_cfg, trust_remote_code=True)
+
+
+def check_model_wiring_meta(family, model_path):
+    print("\n=== Phase 2 (config-only / meta device — no weights downloaded) ===")
+    model = _build_meta_model(model_path)
+    cls = FAMILY_TO_CLASS[family]
+    model_base = cls.__new__(cls)  # bypass __init__: no tokenizer, no weights
+    model_base.model = model
+    return _probe_wiring(model_base, family)
+
+
 def check_model_wiring(family, model_path, device):
     print("\n=== Phase 2: full model wiring ===")
     from src.model_utils.model_loader import load_model
-    from src.model_utils.moe_model_base import resolve_text_model
 
     model_base = load_model(family, model_path, device)
-    model = model_base.model
+    return _probe_wiring(model_base, family)
 
+
+def _probe_wiring(model_base, family):
+    from src.model_utils.moe_model_base import resolve_text_model
+
+    model = model_base.model
     text_model = resolve_text_model(model)
     report(PASS, f"resolve_text_model -> {type(text_model).__name__} "
                  f"({len(text_model.layers)} layers)")
@@ -244,9 +284,11 @@ def check_model_wiring(family, model_path, device):
     router = model_base._get_router(moe_layer)
     report(PASS, f"_get_router({moe_layer}) -> {type(router).__name__}")
 
-    print(f"\n    eoi_toks   = {model_base.eoi_toks}")
-    print(f"    refusal    = {model_base.refusal_toks} -> "
-          f"{model_base.tokenizer.convert_ids_to_tokens(model_base.refusal_toks)}")
+    # Only present after a full (non-meta) construction.
+    if getattr(model_base, "eoi_toks", None) is not None:
+        print(f"\n    eoi_toks   = {model_base.eoi_toks}")
+        print(f"    refusal    = {model_base.refusal_toks} -> "
+              f"{model_base.tokenizer.convert_ids_to_tokens(model_base.refusal_toks)}")
     return PASS
 
 
@@ -257,6 +299,9 @@ def main():
                     help="HF id or local path (defaults to the known HF id)")
     ap.add_argument("--load-model", action="store_true",
                     help="also run Phase 2 (loads the full model — heavy)")
+    ap.add_argument("--config-only", action="store_true",
+                    help="run Phase 2 on the meta device (architecture from config; "
+                         "no weights downloaded). Good for huge/disk-limited models.")
     ap.add_argument("--device", default="cuda")
     args = ap.parse_args()
 
@@ -279,15 +324,20 @@ def main():
     s2 = check_chat_template(tok, spec)
 
     s3 = None
-    if args.load_model:
+    if args.load_model or args.config_only:
+        runner = (check_model_wiring_meta if args.config_only
+                  else check_model_wiring)
+        run_args = ((args.model_family, model_path) if args.config_only
+                    else (args.model_family, model_path, args.device))
         try:
-            s3 = check_model_wiring(args.model_family, model_path, args.device)
+            s3 = runner(*run_args)
         except Exception as e:  # noqa: BLE001
             s3 = report(FAIL, f"Phase 2 failed: {type(e).__name__}: {e}")
             print("  (unsupported model_type -> update transformers; "
                   "wrong attr name -> fix it in the model file.)")
     else:
-        print("\n(Phase 2 skipped; pass --load-model to verify module wiring.)")
+        print("\n(Phase 2 skipped; pass --load-model, or --config-only for a "
+              "weight-free meta-device wiring check.)")
 
     print("\n=== summary ===")
     print(f"  refusal tokens : {s1}")
