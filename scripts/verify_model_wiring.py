@@ -189,26 +189,53 @@ def check_model_wiring(family, model_path, device):
     # Find the first MoE layer and probe expert wiring.
     print(f"\n    expected expert layout: {REGISTRY[family]['expert_attr']}")
     moe_layer = None
+    experts = None
+    first_err = None
     for i in range(len(text_model.layers)):
         try:
             experts = model_base._get_layer_experts(i)
             moe_layer = i
             break
-        except Exception:  # noqa: BLE001
+        except Exception as e:  # noqa: BLE001
+            if first_err is None:
+                first_err = e
             continue
     if moe_layer is None:
-        return report(FAIL, "no MoE layer found via _get_layer_experts")
+        report(FAIL, f"no MoE layer found via _get_layer_experts; "
+                     f"first error was {type(first_err).__name__}: {first_err}")
+        # Introspect layer 0's mlp so we can see the *actual* structure/naming.
+        try:
+            mlp = text_model.layers[0].mlp
+            print(f"    layers[0].mlp type = {type(mlp).__name__}")
+            present = [a for a in
+                       ("experts", "gate", "shared_expert", "shared_experts", "down_proj")
+                       if hasattr(mlp, a)]
+            print(f"    layers[0].mlp has attrs: {present}")
+            ex = getattr(mlp, "experts", None)
+            if ex is not None:
+                print(f"    layers[0].mlp.experts type = {type(ex).__name__}, "
+                      f"is ModuleList = {isinstance(ex, __import__('torch').nn.ModuleList)}")
+                for sub in ("down_proj", "gate_up_proj", "num_experts"):
+                    if hasattr(ex, sub):
+                        v = getattr(ex, sub)
+                        print(f"      experts.{sub}: "
+                              f"{tuple(v.shape) if hasattr(v, 'shape') else v}")
+        except Exception as e:  # noqa: BLE001
+            print(f"    (could not introspect layers[0].mlp: {e})")
+        return FAIL
 
     report(PASS, f"_get_layer_experts({moe_layer}) -> {len(experts)} experts")
     print("    layer module tree (first MoE layer):")
     print("      " + str(text_model.layers[moe_layer]).replace("\n", "\n      "))
 
-    # down_proj weight contract: [hidden, intermediate], clonable + writable.
+    # down_proj weight contract: [hidden, intermediate]. Use .shape (meta-safe;
+    # device_map offloading can leave params on the meta device, where .clone()
+    # would raise).
     dp = model_base._get_expert_down_proj(experts[0])
     w = dp.weight
-    shape = tuple(w.clone().shape)
+    shape = tuple(getattr(w, "shape", None) or w.clone().shape)
     report(PASS if len(shape) == 2 else FAIL,
-           f"_get_expert_down_proj(e0).weight clone shape = {shape} (want [hidden, intermediate])")
+           f"_get_expert_down_proj(e0).weight shape = {shape} (want [hidden, intermediate])")
 
     n = model_base._get_num_experts()
     report(PASS if n == len(experts) else WARN,

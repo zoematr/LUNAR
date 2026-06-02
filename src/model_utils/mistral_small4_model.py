@@ -43,18 +43,22 @@ from src.model_utils.moe_model_base import (
 #      which the identical config fields make near-certain, but confirm.
 # ---------------------------------------------------------------------------
 
-# Tekken chat format. This minimal [INST] form omits the system prompt and the
-# reasoning ([THINK]/[/THINK]) controls. For faithful prompting prefer building
-# inputs with mistral_common's tokenizer; if you keep this manual template,
-# VERIFY it renders identically to the model card, and note that if reasoning is
-# active the first answer token may be preceded by a [THINK]... block (which
-# would contaminate LUNAR's refusal-token measurement — disable reasoning or
-# seed an empty [THINK][/THINK] the way qwen3moe seeds <think></think>).
-MISTRAL_SMALL4_CHAT_TEMPLATE = "[INST] {instruction} [/INST]"
+# Tekken chat format, verified against the model's own chat_template.jinja:
+#   <s>[MODEL_SETTINGS]{"reasoning_effort": "none"}[/MODEL_SETTINGS][INST]...[/INST]
+# The [MODEL_SETTINGS] block with reasoning_effort "none" is how this model
+# disables its reasoning trace (the analogue of Qwen3's enable_thinking=False) —
+# essential for LUNAR, otherwise a [THINK]... block would precede the answer and
+# contaminate the first-token refusal measurement. <s> (BOS) is added by the
+# tokenizer, so it is not included here. The JSON braces are doubled for .format().
+MISTRAL_SMALL4_CHAT_TEMPLATE = (
+    '[MODEL_SETTINGS]{{"reasoning_effort": "none"}}[/MODEL_SETTINGS]'
+    "[INST]{instruction}[/INST]"
+)
 
-# Tekken vocab — the old Mistral-7B SentencePiece id (315) does NOT apply.
-# Verify with: tokenizer.encode("I", add_special_tokens=False)
-MISTRAL_SMALL4_REFUSAL_TOKS = [40]  # 'I' — VERIFY against the Tekken tokenizer
+# Tekken vocab (131072). Verified against the Mistral-Small-4 tokenizer:
+#   encode("I", add_special_tokens=False) == [1073]
+# (The old Mistral-7B SentencePiece id 315, and 40, do NOT apply: 40 = '<SPECIAL_40>'.)
+MISTRAL_SMALL4_REFUSAL_TOKS = [1073]  # 'I'
 
 
 def format_instruction_mistral_small4_chat(
