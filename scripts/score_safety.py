@@ -71,27 +71,66 @@ LLAMA_GUARD_CATEGORIES = {
 }
 
 
-def load_llama_guard(model_id: str, device: str):
-    from transformers import AutoModelForCausalLM, AutoTokenizer
+def _is_llama4_guard(model_id: str) -> bool:
+    """Check if the model ID points to a Llama Guard 4 (Llama 4 architecture)."""
+    return "Guard-4" in model_id or "guard-4" in model_id
 
+
+def _patch_llama4_config(model):
+    """Patch known Llama 4 config issues that crash generation in current
+    transformers. These are transformers bugs, not model bugs — the config
+    values exist in the checkpoint but aren't always propagated correctly."""
+    text_cfg = (model.config.get_text_config()
+                if hasattr(model.config, "get_text_config") else model.config)
+
+    # 1. sliding_window=None crashes the cache constructor.
+    if getattr(text_cfg, "sliding_window", None) is None:
+        text_cfg.sliding_window = 131072
+
+    # 2. attention_chunk_size missing crashes create_chunked_causal_mask.
+    if not hasattr(text_cfg, "attention_chunk_size") or text_cfg.attention_chunk_size is None:
+        text_cfg.attention_chunk_size = 8192  # Llama 4 default
+
+    # 3. generation_config.cache_implementation conflicts with DynamicCache.
+    if hasattr(model, "generation_config") and model.generation_config is not None:
+        model.generation_config.cache_implementation = None
+
+
+def load_llama_guard(model_id: str, device: str):
     print(f"Loading Llama Guard: {model_id} ...")
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
-    model = AutoModelForCausalLM.from_pretrained(
-        model_id,
-        torch_dtype=torch.bfloat16,
-        device_map=device,
-    ).eval()
-    return model, tokenizer
+
+    if _is_llama4_guard(model_id):
+        from transformers import AutoProcessor, Llama4ForConditionalGeneration
+
+        processor = AutoProcessor.from_pretrained(model_id)
+        model = Llama4ForConditionalGeneration.from_pretrained(
+            model_id,
+            torch_dtype=torch.bfloat16,
+            device_map=device,
+        ).eval()
+        _patch_llama4_config(model)
+        return model, processor
+    else:
+        from transformers import AutoModelForCausalLM, AutoTokenizer
+
+        tokenizer = AutoTokenizer.from_pretrained(model_id)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_id,
+            torch_dtype=torch.bfloat16,
+            device_map=device,
+        ).eval()
+        return model, tokenizer
 
 
 def classify_llama_guard(
     model,
-    tokenizer,
+    tokenizer_or_processor,
     prompts: list[str],
     responses: list[str],
     batch_size: int = 4,
+    is_llama4: bool = False,
 ) -> list[dict]:
-    """Classify (prompt, response) pairs with Llama Guard 3.
+    """Classify (prompt, response) pairs with Llama Guard (3 or 4).
 
     Returns list of dicts:
       {"safe": bool, "categories": ["S1", ...], "raw": "unsafe\\nS1"}
@@ -102,28 +141,54 @@ def classify_llama_guard(
         batch_responses = responses[i : i + batch_size]
 
         for prompt, response in zip(batch_prompts, batch_responses):
-            # Llama Guard classifies a conversation: user turn + assistant turn.
-            messages = [
-                {"role": "user", "content": prompt},
-                {"role": "assistant", "content": response},
-            ]
-
-            input_ids = tokenizer.apply_chat_template(
-                messages,
-                return_tensors="pt",
-                add_generation_prompt=True,
-            ).to(model.device)
+            if is_llama4:
+                # Guard 4: multimodal message format + processor.
+                messages = [
+                    {"role": "user", "content": [{"type": "text", "text": prompt}]},
+                    {"role": "assistant", "content": [{"type": "text", "text": response}]},
+                ]
+                inputs = tokenizer_or_processor.apply_chat_template(
+                    messages,
+                    tokenize=True,
+                    add_generation_prompt=True,
+                    return_tensors="pt",
+                    return_dict=True,
+                ).to(model.device)
+            else:
+                # Guard 3: plain text messages + tokenizer.
+                messages = [
+                    {"role": "user", "content": prompt},
+                    {"role": "assistant", "content": response},
+                ]
+                input_ids = tokenizer_or_processor.apply_chat_template(
+                    messages,
+                    return_tensors="pt",
+                    add_generation_prompt=True,
+                )
+                # apply_chat_template may return a BatchEncoding or a tensor
+                # depending on the transformers version; normalize to a tensor.
+                if hasattr(input_ids, "input_ids"):
+                    input_ids = input_ids.input_ids
+                inputs = {"input_ids": input_ids.to(model.device)}
 
             with torch.no_grad():
-                output_ids = model.generate(
-                    input_ids=input_ids,
+                from transformers import DynamicCache
+
+                generate_kwargs = dict(
+                    **inputs,
                     max_new_tokens=20,
                     do_sample=False,
                 )
+                if is_llama4:
+                    generate_kwargs["past_key_values"] = DynamicCache()
+                output_ids = model.generate(**generate_kwargs)
 
             # Decode only the new tokens.
-            new_tokens = output_ids[:, input_ids.shape[-1] :]
-            raw = tokenizer.batch_decode(new_tokens, skip_special_tokens=True)[0].strip()
+            input_len = inputs["input_ids"].shape[-1]
+            new_tokens = output_ids[:, input_len:]
+            raw = tokenizer_or_processor.batch_decode(
+                new_tokens, skip_special_tokens=True
+            )[0].strip()
 
             # Parse: first line is "safe" or "unsafe", subsequent lines are categories.
             lines = [l.strip() for l in raw.split("\n") if l.strip()]
@@ -359,9 +424,10 @@ def main():
     # ── Load judge ──────────────────────────────────────────────────────
     if args.judge == "llama-guard":
         model_id = args.cls_model or "meta-llama/Llama-Guard-3-8B"
-        model, tokenizer = load_llama_guard(model_id, device)
+        is_lg4 = _is_llama4_guard(model_id)
+        model, tok_or_proc = load_llama_guard(model_id, device)
         classify_fn = lambda prompts, responses: classify_llama_guard(
-            model, tokenizer, prompts, responses, args.batch_size
+            model, tok_or_proc, prompts, responses, args.batch_size, is_llama4=is_lg4
         )
     else:
         model_id = args.cls_model or "cais/HarmBench-Llama-2-13b-cls"
