@@ -125,10 +125,13 @@ def classify_llama_guard(
             ).to(model.device)
 
             with torch.no_grad():
+                from transformers import DynamicCache
+
                 output_ids = model.generate(
                     **inputs,
                     max_new_tokens=20,
                     do_sample=False,
+                    past_key_values=DynamicCache(),
                 )
 
             # Decode only the new tokens.
