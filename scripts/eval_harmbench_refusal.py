@@ -111,18 +111,53 @@ def capture_eoi_activations(
 
 # ── HarmBench loader ─────────────────────────────────────────────────────────
 
-def load_harmbench_prompts() -> list[str]:
-    from datasets import load_dataset, DatasetDict
-    print("Loading HarmBench standard behaviors from HuggingFace (cais/harmbench) ...")
-    ds = load_dataset("cais/harmbench", "standard")
-    if isinstance(ds, DatasetDict):
-        split = list(ds.keys())[0]
-        ds = ds[split]
-    if "Prompt" in ds.column_names:
-        return list(ds["Prompt"])
-    if "Behavior" in ds.column_names:
-        return list(ds["Behavior"])
-    raise ValueError(f"No prompt column found. Available: {ds.column_names}")
+HARMBENCH_CSV_URL = (
+    "https://raw.githubusercontent.com/centerforaisafety/HarmBench/"
+    "main/data/behavior_datasets/harmbench_behaviors_text_all.csv"
+)
+HARMBENCH_LOCAL_CACHE = "dataset/harmbench_behaviors_text_all.csv"
+
+
+def load_harmbench_prompts(categories: str = "all_text") -> list[str]:
+    """Load HarmBench text behaviors from the official GitHub CSV.
+
+    Downloads once and caches locally so subsequent runs are offline-safe.
+
+    Args:
+        categories: which FunctionalCategories to include.
+            "all_text"  — standard + contextual + copyright (400 behaviors)
+            "standard"  — standard only (200 behaviors, no context)
+    """
+    import csv
+    from urllib.request import urlretrieve
+
+    if not os.path.exists(HARMBENCH_LOCAL_CACHE):
+        print(f"Downloading HarmBench behaviors from GitHub ...")
+        os.makedirs(os.path.dirname(HARMBENCH_LOCAL_CACHE), exist_ok=True)
+        urlretrieve(HARMBENCH_CSV_URL, HARMBENCH_LOCAL_CACHE)
+    else:
+        print(f"Loading cached HarmBench behaviors from {HARMBENCH_LOCAL_CACHE}")
+
+    keep = {"standard", "contextual", "copyright"} if categories == "all_text" else {categories}
+
+    with open(HARMBENCH_LOCAL_CACHE, newline="") as f:
+        reader = csv.DictReader(f)
+        rows = [r for r in reader if r.get("FunctionalCategory", "") in keep]
+
+    prompts = []
+    for r in rows:
+        behavior = r["Behavior"].strip()
+        if not behavior:
+            continue
+        context = (r.get("ContextString") or "").strip()
+        # Contextual behaviors: prepend the context so the model sees it.
+        if context:
+            prompts.append(f"{context}\n\n{behavior}")
+        else:
+            prompts.append(behavior)
+
+    print(f"  {len(prompts)} text behaviors loaded (categories: {', '.join(sorted(keep))})")
+    return prompts
 
 
 # ── main ─────────────────────────────────────────────────────────────────────
@@ -142,6 +177,9 @@ def main():
     parser.add_argument("--max_samples",    type=int, default=None,
                         help="Cap number of test prompts (useful for debugging)")
     parser.add_argument("--max_new_tokens", type=int, default=128)
+    parser.add_argument("--harmless_path",  default="dataset/splits/harmless_alpaca.json",
+                        help="Harmless contrast set for refusal direction "
+                             "(default: Alpaca instructions)")
     parser.add_argument("--device",         default="auto")
     args = parser.parse_args()
 
@@ -155,9 +193,12 @@ def main():
     print(f"\nLoading {args.model_family} ...")
     model_base = load_model(args.model_family, args.model_path, device)
 
-    # ── compute refusal direction from Dref ──────────────────────────────────
+    # ── compute refusal direction ──────────────────────────────────────────
+    # harmful − harmless (Arditi-style). Default harmless is Alpaca instructions
+    # (benign, answerable, imperative format) — NOT the unverifiable/fictitious
+    # set, which encodes "unknown content" rather than clean harmlessness.
     with open("dataset/splits/harmful.json")   as f: harmful_data  = json.load(f)
-    with open("dataset/splits/unverified.json") as f: harmless_data = json.load(f)
+    with open(args.harmless_path)              as f: harmless_data = json.load(f)
     harmful_instr  = [x["instruction"] for x in harmful_data]
     harmless_instr = [x["instruction"] for x in harmless_data]
 
@@ -171,11 +212,7 @@ def main():
 
     # ── load test prompts ────────────────────────────────────────────────────
     if args.test_set == "harmbench":
-        try:
-            test_prompts = load_harmbench_prompts()
-        except Exception as e:
-            print(f"Warning: HarmBench load failed ({e}). Falling back to Dref.")
-            test_prompts = harmful_instr
+        test_prompts = load_harmbench_prompts()
     else:
         print("Using Dref (dataset/splits/harmful.json) as test set.")
         test_prompts = harmful_instr
