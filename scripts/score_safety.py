@@ -117,7 +117,10 @@ def classify_llama_guard(
 
             with torch.no_grad():
                 output_ids = model.generate(
-                    **inputs, max_new_tokens=20, do_sample=False
+                    **inputs,
+                    max_new_tokens=20,
+                    do_sample=False,
+                    cache_implementation="dynamic",
                 )
 
             # Decode only the new tokens.
