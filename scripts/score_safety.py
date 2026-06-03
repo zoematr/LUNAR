@@ -80,6 +80,15 @@ def load_llama_guard(model_id: str, device: str):
         torch_dtype=torch.bfloat16,
         device_map=device,
     ).eval()
+
+    # Workaround: Llama Guard 4's config has sliding_window=None, which crashes
+    # the cache constructor (both static and dynamic) in current transformers.
+    # Patch it to a large int so the cache code never sees None.
+    text_cfg = (model.config.get_text_config()
+                if hasattr(model.config, "get_text_config") else model.config)
+    if getattr(text_cfg, "sliding_window", None) is None:
+        text_cfg.sliding_window = 131072  # effectively unlimited
+
     return model, processor
 
 
@@ -120,7 +129,6 @@ def classify_llama_guard(
                     **inputs,
                     max_new_tokens=20,
                     do_sample=False,
-                    cache_implementation="dynamic",
                 )
 
             # Decode only the new tokens.
