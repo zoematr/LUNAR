@@ -89,6 +89,11 @@ def load_llama_guard(model_id: str, device: str):
     if getattr(text_cfg, "sliding_window", None) is None:
         text_cfg.sliding_window = 131072  # effectively unlimited
 
+    # Also clear any cache_implementation from generation_config so we can
+    # pass our own DynamicCache without triggering a conflict.
+    if hasattr(model, "generation_config"):
+        model.generation_config.cache_implementation = None
+
     return model, processor
 
 
