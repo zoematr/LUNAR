@@ -9,7 +9,7 @@
 
 # Paths
 WORK_DIR=/nfs/data8/matrullo/LUNAR
-VENV_DIR=/nfs/data8/matrullo/venv_lunar
+VENV_DIR=/nfs/data8/matrullo/lunar_venv
 
 # Activate virtual environment
 source $VENV_DIR/bin/activate
