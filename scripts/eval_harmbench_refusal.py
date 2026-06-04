@@ -181,6 +181,10 @@ def main():
                         help="Harmless contrast set for refusal direction "
                              "(default: Alpaca instructions)")
     parser.add_argument("--device",         default="auto")
+    parser.add_argument("--dry-run",        action="store_true",
+                        help="Smoke test: skip model loading and generation, "
+                             "run the full pipeline with fake responses to verify "
+                             "imports, data loading, tokenizer, and output format.")
     args = parser.parse_args()
 
     if args.device == "auto":
@@ -189,26 +193,12 @@ def main():
         device = torch.device(args.device)
     print(f"device: {device}")
 
-    # ── load model ───────────────────────────────────────────────────────────
-    print(f"\nLoading {args.model_family} ...")
-    model_base = load_model(args.model_family, args.model_path, device)
-
-    # ── compute refusal direction ──────────────────────────────────────────
-    # harmful − harmless (Arditi-style). Default harmless is Alpaca instructions
-    # (benign, answerable, imperative format) — NOT the unverifiable/fictitious
-    # set, which encodes "unknown content" rather than clean harmlessness.
+    # ── load data files (always, including dry-run) ────────────────────────
     with open("dataset/splits/harmful.json")   as f: harmful_data  = json.load(f)
     with open(args.harmless_path)              as f: harmless_data = json.load(f)
     harmful_instr  = [x["instruction"] for x in harmful_data]
     harmless_instr = [x["instruction"] for x in harmless_data]
-
-    print(f"\nComputing refusal direction from Dref "
-          f"({len(harmful_instr)} harmful, {len(harmless_instr)} harmless) ...")
-    mean_diffs = generate_directions(model_base, harmful_instr, harmless_instr)
-    # mean_diffs: [n_eoi_positions, n_layers, d_model]
-    # Use the last EOI position — matches the position -1 captured per prompt.
-    direction = mean_diffs[-1].float()          # [n_layers, d_model]
-    direction = F.normalize(direction, dim=-1)  # unit-norm per layer
+    print(f"  Loaded {len(harmful_instr)} harmful, {len(harmless_instr)} harmless instructions")
 
     # ── load test prompts ────────────────────────────────────────────────────
     if args.test_set == "harmbench":
@@ -219,36 +209,92 @@ def main():
 
     if args.max_samples:
         test_prompts = test_prompts[: args.max_samples]
-    print(f"Test prompts: {len(test_prompts)}\n")
+    print(f"Test prompts: {len(test_prompts)}")
 
-    # ── evaluate ─────────────────────────────────────────────────────────────
-    results = []
+    # ── dry-run: verify the full pipeline without loading the model ──────
+    if args.dry_run:
+        print("\n=== DRY RUN — skipping model load & generation ===")
+        # Verify tokenizer loads (catches template / vocab issues)
+        from transformers import AutoTokenizer
+        print(f"\nLoading tokenizer for {args.model_path} ...")
+        tok = AutoTokenizer.from_pretrained(args.model_path, trust_remote_code=True)
+        print(f"  vocab_size={tok.vocab_size}, pad_token={tok.pad_token}")
 
-    for i in tqdm(range(0, len(test_prompts), args.batch_size), desc="eval"):
-        batch_prompts = test_prompts[i : i + args.batch_size]
+        # Verify the model class can be instantiated (catches import / wiring issues)
+        from src.model_utils.model_loader import load_model as _  # noqa: F401 import check
+        print(f"  model_loader import OK for family '{args.model_family}'")
 
-        # (a) Capture EOI activations and compute cosine similarity
-        acts = capture_eoi_activations(model_base, batch_prompts, position=-1)
-        # acts: [B, n_layers, d_model], direction: [n_layers, d_model] — both on CPU
-        acts_norm = F.normalize(acts.cpu(), dim=-1)                        # [B, n_layers, d_model]
-        cos_sims  = (acts_norm * direction.cpu().unsqueeze(0)).sum(-1)     # [B, n_layers]
+        # Verify config-only meta build (catches architecture support)
+        from transformers import AutoConfig
+        from src.model_utils.moe_model_base import build_generative_lm_on_meta
+        print(f"  Building {args.model_path} on meta device ...")
+        config = AutoConfig.from_pretrained(args.model_path, trust_remote_code=True)
+        meta_model = build_generative_lm_on_meta(config)
+        print(f"  Meta model: {type(meta_model).__name__}")
 
-        # (b) Generate completions
-        batch_dataset = [{"instruction": p, "category": None} for p in batch_prompts]
-        completions   = model_base.generate_completions(
-            batch_dataset, max_new_tokens=args.max_new_tokens
-        )
-
-        for j, comp in enumerate(completions):
-            response = comp["response"]
+        # Fake results to test output path
+        n_layers = 16  # placeholder
+        results = []
+        for p in test_prompts[:3]:
             results.append({
-                "prompt":            batch_prompts[j],
-                "response":          response,
-                "refused_text":      is_refusal(response),
-                "cos_sim_per_layer": [round(x, 4) for x in cos_sims[j].tolist()],
-                "cos_sim_mean":      round(float(cos_sims[j].mean()), 4),
-                "cos_sim_max_layer": int(cos_sims[j].argmax()),
+                "prompt": p,
+                "response": "[DRY RUN — no real generation]",
+                "refused_text": False,
+                "cos_sim_per_layer": [0.0] * n_layers,
+                "cos_sim_mean": 0.0,
+                "cos_sim_max_layer": 0,
             })
+        print(f"\n  Generated {len(results)} fake results (first 3 prompts)")
+        print(f"  Sample prompt: {results[0]['prompt'][:80]}...")
+        print(f"\n=== DRY RUN PASSED — pipeline is wired correctly ===")
+        print(f"  Remove --dry-run to run for real.\n")
+
+    else:
+        # ── real run ─────────────────────────────────────────────────────────
+        print(f"\nLoading {args.model_family} ...")
+        model_base = load_model(args.model_family, args.model_path, device)
+
+        # ── compute refusal direction ────────────────────────────────────────
+        # harmful − harmless (Arditi-style). Default harmless is Alpaca instructions
+        # (benign, answerable, imperative format) — NOT the unverifiable/fictitious
+        # set, which encodes "unknown content" rather than clean harmlessness.
+        print(f"\nComputing refusal direction from Dref "
+              f"({len(harmful_instr)} harmful, {len(harmless_instr)} harmless) ...")
+        mean_diffs = generate_directions(model_base, harmful_instr, harmless_instr)
+        # mean_diffs: [n_eoi_positions, n_layers, d_model]
+        # Use the last EOI position — matches the position -1 captured per prompt.
+        direction = mean_diffs[-1].float()          # [n_layers, d_model]
+        direction = F.normalize(direction, dim=-1)  # unit-norm per layer
+
+        # ── evaluate ─────────────────────────────────────────────────────────
+        results = []
+        print(f"\n")
+        for i in tqdm(range(0, len(test_prompts), args.batch_size), desc="eval"):
+            batch_prompts = test_prompts[i : i + args.batch_size]
+
+            # (a) Capture EOI activations and compute cosine similarity
+            acts = capture_eoi_activations(model_base, batch_prompts, position=-1)
+            # acts: [B, n_layers, d_model], direction: [n_layers, d_model]
+            acts_norm = F.normalize(acts.cpu(), dim=-1)
+            cos_sims  = (acts_norm * direction.cpu().unsqueeze(0)).sum(-1)
+
+            # (b) Generate completions
+            batch_dataset = [{"instruction": p, "category": None} for p in batch_prompts]
+            completions   = model_base.generate_completions(
+                batch_dataset, max_new_tokens=args.max_new_tokens
+            )
+
+            for j, comp in enumerate(completions):
+                response = comp["response"]
+                results.append({
+                    "prompt":            batch_prompts[j],
+                    "response":          response,
+                    "refused_text":      is_refusal(response),
+                    "cos_sim_per_layer": [round(x, 4) for x in cos_sims[j].tolist()],
+                    "cos_sim_mean":      round(float(cos_sims[j].mean()), 4),
+                    "cos_sim_max_layer": int(cos_sims[j].argmax()),
+                })
+
 
     # ── summary ──────────────────────────────────────────────────────────────
     n = len(results)
