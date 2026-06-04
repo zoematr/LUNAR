@@ -112,7 +112,12 @@ def classify_llama_guard(
                 messages,
                 return_tensors="pt",
                 add_generation_prompt=True,
-            ).to(model.device)
+            )
+            # apply_chat_template may return a BatchEncoding or a tensor
+            # depending on the transformers version; normalize to a tensor.
+            if hasattr(input_ids, "input_ids"):
+                input_ids = input_ids.input_ids
+            input_ids = input_ids.to(model.device)
 
             with torch.no_grad():
                 output_ids = model.generate(

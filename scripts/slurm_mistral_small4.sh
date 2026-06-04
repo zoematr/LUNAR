@@ -3,7 +3,7 @@
 #SBATCH --output=/dss/dsshome1/09/ra48tah2/LUNAR/logs/mistral_small4_%j.txt
 #SBATCH --gres=gpu:4
 #SBATCH --time=06:00:00
-#SBATCH --qos=gpu
+#SBATCH --qos=mcml
 #SBATCH -p mcml-hgx-a100-80x4
 
 set -e  # stop on first error
