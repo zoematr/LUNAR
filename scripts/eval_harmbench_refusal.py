@@ -186,6 +186,9 @@ def main():
                         help="Harmless contrast set for refusal direction "
                              "(default: Alpaca instructions)")
     parser.add_argument("--device",         default="auto")
+    parser.add_argument("--load_in_4bit",  action="store_true",
+                        help="Load model in 4-bit quantization (fits large models "
+                             "on a single GPU, e.g. Llama 4 Scout on Colab)")
     parser.add_argument("--dry-run",        action="store_true",
                         help="Smoke test: skip model loading and generation, "
                              "run the full pipeline with fake responses to verify "
@@ -257,7 +260,10 @@ def main():
     else:
         # ── real run ─────────────────────────────────────────────────────────
         print(f"\nLoading {args.model_family} ...")
-        model_base = load_model(args.model_family, args.model_path, device)
+        model_base = load_model(
+            args.model_family, args.model_path, device,
+            load_in_4bit=getattr(args, 'load_in_4bit', False),
+        )
 
         # ── compute refusal direction ────────────────────────────────────────
         # harmful − harmless (Arditi-style). Default harmless is Alpaca instructions

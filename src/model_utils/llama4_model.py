@@ -130,12 +130,22 @@ def act_add_llama4_weights(model, direction: Float[Tensor, "d_model"], coeff, la
 class Llama4Model(MoEModelBase):
 
     def _load_model(self, model_path, dtype=torch.bfloat16):
-        model = AutoModelForCausalLM.from_pretrained(
-            model_path,
+        load_kwargs = dict(
             torch_dtype=dtype,
             trust_remote_code=True,
             device_map="auto",
             offload_folder="/tmp/offload_llama4",
+        )
+        if getattr(self, "load_in_4bit", False):
+            from transformers import BitsAndBytesConfig
+            load_kwargs["quantization_config"] = BitsAndBytesConfig(
+                load_in_4bit=True,
+                bnb_4bit_compute_dtype=dtype,
+            )
+            # quantization handles dtype; don't pass torch_dtype alongside it
+            load_kwargs.pop("torch_dtype", None)
+        model = AutoModelForCausalLM.from_pretrained(
+            model_path, **load_kwargs
         ).eval()
         model.requires_grad_(False)
         return model

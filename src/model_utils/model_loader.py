@@ -14,34 +14,34 @@ from src.model_utils.olmo_model import OLMoModel
 from src.model_utils.olmoe_model import OLMoEModel
 
 
-def load_model(model_family, model_path, device):
+def load_model(model_family, model_path, device, load_in_4bit=False):
+    kwargs = {"load_in_4bit": load_in_4bit} if load_in_4bit else {}
     if model_family == "llama2-7b-chat":
-        model_base = Llama2Model(model_path)
+        model_base = Llama2Model(model_path, **kwargs)
     elif model_family == "mistral-7b-instruct":
-        model_base = MistralModel(model_path)
+        model_base = MistralModel(model_path, **kwargs)
     elif model_family == "mistral-small-4":
-        model_base = MistralSmall4Model(model_path)
+        model_base = MistralSmall4Model(model_path, **kwargs)
     elif model_family == "llama3-8b-instruct":
-        model_base = Llama3Model(model_path)
+        model_base = Llama3Model(model_path, **kwargs)
     elif model_family == "llama4-scout":
-        model_base = Llama4Model(model_path)
+        model_base = Llama4Model(model_path, **kwargs)
     elif model_family == "gemma-7b-it":
-        model_base = GemmaModel(model_path)
+        model_base = GemmaModel(model_path, **kwargs)
     elif model_family == "Qwen2-7B-Instruct":
-        model_base = QwenModel(model_path)
+        model_base = QwenModel(model_path, **kwargs)
     elif model_family in ("Qwen2-57B-A14B-Instruct", "Qwen1.5-MoE-A2.7B-Chat"):
-        model_base = Qwen2MoEModel(model_path)
+        model_base = Qwen2MoEModel(model_path, **kwargs)
     elif model_family == "Qwen3-30B-A3B":
-        model_base = Qwen3MoEModel(model_path)
+        model_base = Qwen3MoEModel(model_path, **kwargs)
     elif model_family == "Qwen3.6-35B-A3B":
-        # Different architecture from Qwen3-30B-A3B: hybrid linear/full attention
-        # + shared expert + multimodal wrapper (qwen3_5_moe), not qwen3_moe.
-        model_base = Qwen3_5MoEModel(model_path)
+        model_base = Qwen3_5MoEModel(model_path, **kwargs)
     elif model_family == "olmo-2-1b-instruct":
-        model_base = OLMoModel(model_path)
+        model_base = OLMoModel(model_path, **kwargs)
     elif model_family == "olmoe-1b-7b-instruct":
-        model_base = OLMoEModel(model_path)
+        model_base = OLMoEModel(model_path, **kwargs)
     else:
         raise ValueError(f"Unknown model family: {model_path}")
-    model_base = model_base._to(device)
+    if not load_in_4bit:
+        model_base = model_base._to(device)
     return model_base
