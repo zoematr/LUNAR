@@ -172,6 +172,11 @@ def main():
                         choices=["harmbench", "dref"],
                         help="harmbench: download standard behaviors; "
                              "dref: use dataset/splits/harmful.json")
+    parser.add_argument("--harmbench_categories", default="standard",
+                        choices=["standard", "all_text"],
+                        help="Which HarmBench categories to test on. "
+                             "'standard' = 200 safety-harmful behaviors (recommended). "
+                             "'all_text' = 400 including copyright and contextual.")
     parser.add_argument("--save_path",      default="run_results/harmbench_refusal")
     parser.add_argument("--batch_size",     type=int, default=8)
     parser.add_argument("--max_samples",    type=int, default=None,
@@ -202,7 +207,7 @@ def main():
 
     # ── load test prompts ────────────────────────────────────────────────────
     if args.test_set == "harmbench":
-        test_prompts = load_harmbench_prompts()
+        test_prompts = load_harmbench_prompts(categories=args.harmbench_categories)
     else:
         print("Using Dref (dataset/splits/harmful.json) as test set.")
         test_prompts = harmful_instr
