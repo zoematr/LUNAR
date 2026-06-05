@@ -34,6 +34,7 @@ from tqdm import tqdm
 
 from src.dataset_utils import split_raw_dataset_for_forget
 from src.model_utils.model_loader import load_model
+from src.model_utils.moe_model_base import resolve_text_model, resolve_text_config
 
 
 # ── helpers ─────────────────────────────────────────────────────────────────
@@ -122,9 +123,9 @@ def analyze_routing(cfg: DictConfig):
 
     model_base = load_model(cfg.model_family, cfg.model_path, device)
 
-    num_layers  = len(model_base.model.model.layers)
+    num_layers  = len(resolve_text_model(model_base.model).layers)
     num_experts = model_base._get_num_experts()
-    top_k       = model_base.model.config.num_experts_per_tok
+    top_k       = resolve_text_config(model_base.model).num_experts_per_tok
     print(f"layers={num_layers}  experts={num_experts}  top_k={top_k}")
 
     data_path = os.path.join("dataset/unlearning", f"{cfg.data_name}.json")

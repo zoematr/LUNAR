@@ -35,10 +35,16 @@ def get_mean_activations(
 ):
     torch.cuda.empty_cache()
 
+    from src.model_utils.moe_model_base import resolve_text_config
+
+    text_config = resolve_text_config(model)
     n_positions = len(positions)
-    n_layers = model.config.num_hidden_layers
+    # block_modules is the already-resolved list of decoder layers, so its length
+    # is the correct layer count even for multimodal-wrapped models (Mistral3,
+    # Llama4) whose top-level config lacks num_hidden_layers.
+    n_layers = len(block_modules)
     n_samples = len(instructions)
-    d_model = model.config.hidden_size
+    d_model = text_config.hidden_size
 
     mean_activations = torch.zeros(
         (n_positions, n_layers, d_model), dtype=torch.float32, device=model.device
@@ -122,10 +128,12 @@ def generate_directions(
         positions=list(range(-len(model_base.eoi_toks), 0)),
     )
 
+    from src.model_utils.moe_model_base import resolve_text_config
+
     assert mean_diffs.shape == (
         len(model_base.eoi_toks),
-        model_base.model.config.num_hidden_layers,
-        model_base.model.config.hidden_size,
+        len(model_base.model_block_modules),
+        resolve_text_config(model_base.model).hidden_size,
     )
     assert not mean_diffs.isnan().any()
 

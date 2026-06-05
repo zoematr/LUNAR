@@ -14,6 +14,18 @@ base_model_path: allenai/OLMoE-1B-7B-0924-Instruct
 # model_family: Qwen2-57B-A14B-Instruct
 # base_model_path: Qwen/Qwen2-57B-A14B-Instruct
 
+# Qwen3-30B-A3B — 48 layers, 128 experts, ~61GB bfloat16
+# model_family: Qwen3-30B-A3B
+# base_model_path: Qwen/Qwen3-30B-A3B
+
+# Llama 4 Scout — 48 layers, 16 experts, ~217GB bfloat16
+# model_family: llama4-scout
+# base_model_path: meta-llama/Llama-4-Scout-17B-16E-Instruct
+
+# Mistral Small 4 — 36 layers, 128 experts, ~238GB bfloat16
+# model_family: mistral-small-4
+# base_model_path: mistralai/Mistral-Small-4-119B-2603
+
 # ────────────────────────────────────────────────────────────────────
 model_path: ${base_model_path}
 

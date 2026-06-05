@@ -79,8 +79,9 @@ def capture_eoi_activations(
     Returns:
         acts  [batch, n_layers, d_model]  float32 on CPU
     """
-    n_layers = model_base.model.config.num_hidden_layers
-    d_model  = model_base.model.config.hidden_size
+    from src.model_utils.moe_model_base import resolve_text_config
+    n_layers = len(model_base.model_block_modules)
+    d_model  = resolve_text_config(model_base.model).hidden_size
     B        = len(prompts)
     acts     = torch.zeros(B, n_layers, d_model, dtype=torch.float32)
     hooks    = []
