@@ -172,8 +172,29 @@ class MistralSmall4Model(MoEModelBase):
         # (image-text-to-text); its mistral4 text backbone is NOT registered for
         # AutoModelForCausalLM, so load via the multimodal auto class. The text
         # decoder is then reached through resolve_text_model (model.model.language_model).
+        from transformers import AutoConfig
+
+        config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+        # The checkpoint is FP8-quantized with activation_scheme="static". On H100
+        # the fused grouped_mm expert kernel does not support static activation
+        # scaling (NotImplementedError); force "dynamic" so activation scales are
+        # computed at runtime and the fused MoE path works. Patch both the top-level
+        # and the nested text_config quantization_config (dict or object form).
+        def _force_dynamic(cfg):
+            qc = getattr(cfg, "quantization_config", None)
+            if isinstance(qc, dict):
+                if qc.get("activation_scheme") == "static":
+                    qc["activation_scheme"] = "dynamic"
+            elif qc is not None and getattr(qc, "activation_scheme", None) == "static":
+                qc.activation_scheme = "dynamic"
+
+        _force_dynamic(config)
+        if hasattr(config, "text_config"):
+            _force_dynamic(config.text_config)
+
         model = load_generative_lm(
             model_path,
+            config=config,
             torch_dtype=dtype,
             trust_remote_code=True,
             device_map="auto",
