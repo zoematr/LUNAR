@@ -5,3 +5,7 @@ models_lunar/
 logs/
 .DS_Store
 *.pyc
+
+presentation/node_modules/
+.lunar_cluster/
+*.pyc
