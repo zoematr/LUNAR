@@ -3,6 +3,8 @@
 #SBATCH --job-name routing-qwen3
 #SBATCH --output=/dss/dsshome1/09/ra48tah2/LUNAR/logs/routing_qwen3_%j.txt
 #SBATCH --ntasks=1
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=128G
 #SBATCH --time=02:00:00
 #SBATCH --gres=gpu:1
 #SBATCH --qos=mcml
@@ -22,13 +24,16 @@ source lunar_venv/bin/activate
 
 export PYTHONPATH=$WORK_DIR:$PYTHONPATH
 export HF_TOKEN=$(cat /dss/dsshome1/09/ra48tah2/.cache/huggingface/token 2>/dev/null)
-# Download the model to node-local /tmp so it doesn't fill the home-dir quota.
-export HF_HOME=/tmp/hf_$SLURM_JOB_ID
+# Reuse the existing home HF cache (default location) so already-downloaded
+# models are not re-fetched. Do NOT point this at /tmp — that bypasses the
+# cache and re-downloads to a wiped, possibly-tmpfs disk.
+export HF_HOME=/dss/dsshome1/09/ra48tah2/.cache/huggingface
 
 mkdir -p logs
 
 echo "Job $SLURM_JOB_ID on $(hostname), $(date)"
 echo "cuda available:"; python -c "import torch; print(torch.cuda.is_available())"
+echo "GPU state at start:"; nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv,noheader
 
 MODEL_FAMILY=Qwen3-30B-A3B
 MODEL_PATH=Qwen/Qwen3-30B-A3B
