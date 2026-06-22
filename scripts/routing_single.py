@@ -100,7 +100,10 @@ def main():
     # ── load prompts ────────────────────────────────────────────────────
     with open(args.data_path) as f:
         data = json.load(f)
-    prompts = [d["question"] for d in data if d.get("question", "").strip()]
+    # Datasets use either "question" (WMDP/MMLU) or "instruction" (harmful/Alpaca).
+    def _text(d):
+        return (d.get("question") or d.get("instruction") or "").strip()
+    prompts = [_text(d) for d in data if _text(d)]
     if args.max_samples:
         prompts = prompts[: args.max_samples]
     tag = args.dataset_tag or Path(args.data_path).stem

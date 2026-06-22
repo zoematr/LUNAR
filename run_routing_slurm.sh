@@ -38,13 +38,20 @@ echo "GPU state at start:"; nvidia-smi --query-gpu=name,memory.total,memory.used
 MODEL_FAMILY=Qwen3-30B-A3B
 MODEL_PATH=Qwen/Qwen3-30B-A3B
 
-for ds in wmdp_bio general_mmlu_science general_mmlu_humanities factual_data; do
-  echo "=== routing: $ds ==="
+# Biology routing baseline (knowledge spread across experts):
+#   wmdp_bio              = hazardous biology (the forget target)
+#   mmlu_college_biology  = benign biology  -> hazardous-vs-benign (collateral)
+#   general_mmlu_science  = non-bio science -> bio-specific vs science-general
+for spec in "wmdp_bio:dataset/unlearning/wmdp_bio.json" \
+            "mmlu_college_biology:dataset/unlearning/mmlu_college_biology.json" \
+            "general_mmlu_science:dataset/unlearning/general_mmlu_science.json"; do
+  tag=${spec%%:*}; path=${spec#*:}
+  echo "=== routing: $tag ==="
   python scripts/routing_single.py \
     --model_family $MODEL_FAMILY \
     --model_path $MODEL_PATH \
-    --data_path dataset/unlearning/$ds.json \
-    --dataset_tag $ds \
+    --data_path "$path" \
+    --dataset_tag "$tag" \
     --max_samples 160
 done
 
