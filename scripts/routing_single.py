@@ -40,12 +40,13 @@ from src.model_utils.model_loader import load_model
 from src.model_utils.moe_model_base import resolve_text_config
 
 
-def collect_routing(model_base, prompts, top_k, num_layers, num_experts):
+def collect_routing(model_base, prompts, top_k, num_layers, num_experts, norm_topk_prob=True):
     """Return per-layer routing stats accumulated over all prompts."""
-    counts       = np.zeros((num_layers, num_experts), dtype=np.float64)
-    weight_sums  = np.zeros((num_layers, num_experts), dtype=np.float64)
-    entropy_sums = np.zeros(num_layers, dtype=np.float64)
-    token_counts = np.zeros(num_layers, dtype=np.int64)
+    counts        = np.zeros((num_layers, num_experts), dtype=np.float64)
+    weight_sums   = np.zeros((num_layers, num_experts), dtype=np.float64)  # full-softmax prob
+    applied_sums  = np.zeros((num_layers, num_experts), dtype=np.float64)  # actual top-k weight
+    entropy_sums  = np.zeros(num_layers, dtype=np.float64)
+    token_counts  = np.zeros(num_layers, dtype=np.int64)
     hooks = []
 
     def make_hook(layer_idx: int):
@@ -54,9 +55,19 @@ def collect_routing(model_base, prompts, top_k, num_layers, num_experts):
             logits = out if isinstance(out, torch.Tensor) else out[0]
             logits = logits.detach().float().reshape(-1, logits.shape[-1])  # [tokens, experts]
             probs = torch.softmax(logits, dim=-1)
-            topk_idx = torch.topk(probs, k=top_k, dim=-1).indices
+            topk_w, topk_idx = torch.topk(probs, k=top_k, dim=-1)           # values + indices
+            # --- selection frequency (how often each expert is in the top-k) ---
             np.add.at(counts[layer_idx], topk_idx.reshape(-1).cpu().numpy(), 1)
+            # --- full-softmax probability mass (kept for reference; tends to be flat) ---
             weight_sums[layer_idx] += probs.sum(dim=0).cpu().numpy()
+            # --- ACTUAL applied weight: the renormalized top-k weight that multiplies
+            #     each selected expert's output (norm_topk_prob), scattered back per expert ---
+            if norm_topk_prob:
+                topk_w = topk_w / topk_w.sum(dim=-1, keepdim=True)
+            applied = torch.zeros_like(probs)
+            applied.scatter_(1, topk_idx, topk_w)                           # [tokens, experts]
+            applied_sums[layer_idx] += applied.sum(dim=0).cpu().numpy()
+            # --- gate entropy (per-token, full softmax) ---
             H = -(probs * torch.log(probs + 1e-9)).sum(dim=-1)
             entropy_sums[layer_idx] += float(H.sum().cpu())
             token_counts[layer_idx] += logits.shape[0]
@@ -76,7 +87,7 @@ def collect_routing(model_base, prompts, top_k, num_layers, num_experts):
         for h in hooks:
             h.remove()
 
-    return counts, weight_sums, entropy_sums, token_counts
+    return counts, weight_sums, applied_sums, entropy_sums, token_counts
 
 
 def main():
@@ -114,20 +125,26 @@ def main():
     model_base = load_model(args.model_family, args.model_path, device)
     num_layers  = len(model_base.model_block_modules)
     num_experts = model_base._get_num_experts()
-    top_k       = resolve_text_config(model_base.model).num_experts_per_tok
-    print(f"layers={num_layers}  experts={num_experts}  top_k={top_k}")
+    text_cfg    = resolve_text_config(model_base.model)
+    top_k       = text_cfg.num_experts_per_tok
+    norm_topk   = getattr(text_cfg, "norm_topk_prob", True)
+    print(f"layers={num_layers}  experts={num_experts}  top_k={top_k}  norm_topk_prob={norm_topk}")
 
     # ── collect ─────────────────────────────────────────────────────────
-    counts, weight_sums, entropy_sums, token_counts = collect_routing(
-        model_base, prompts, top_k, num_layers, num_experts
+    counts, weight_sums, applied_sums, entropy_sums, token_counts = collect_routing(
+        model_base, prompts, top_k, num_layers, num_experts, norm_topk_prob=norm_topk
     )
 
     # ── normalise ───────────────────────────────────────────────────────
-    freq = counts / (counts.sum(axis=1, keepdims=True) + 1e-9)        # selection frequency
-    avg_weight = weight_sums / (token_counts[:, None] + 1e-9)         # mean prob per expert
-    entropy = entropy_sums / (token_counts + 1e-9)                    # mean gate entropy/layer
+    freq = counts / (counts.sum(axis=1, keepdims=True) + 1e-9)         # selection frequency
+    avg_weight = weight_sums / (token_counts[:, None] + 1e-9)          # mean full-softmax prob (flat)
+    applied_weight = applied_sums / (token_counts[:, None] + 1e-9)     # mean APPLIED top-k weight (impact)
+    entropy = entropy_sums / (token_counts + 1e-9)                     # mean gate entropy/layer
     top_experts = [np.argsort(freq[l])[::-1][:10].astype(int).tolist()
                    for l in range(num_layers)]
+    # experts that contribute the most output mass per layer (by applied weight)
+    top_impact = [np.argsort(applied_weight[l])[::-1][:10].astype(int).tolist()
+                  for l in range(num_layers)]
 
     out = {
         "model_family": args.model_family,
@@ -138,10 +155,13 @@ def main():
         "num_layers": num_layers,
         "num_experts": num_experts,
         "top_k": top_k,
-        "freq": freq.round(6).tolist(),                  # [num_layers][num_experts]
-        "avg_weight": avg_weight.round(6).tolist(),      # [num_layers][num_experts]
-        "entropy_per_layer": entropy.round(6).tolist(),  # [num_layers]
-        "top_experts_per_layer": top_experts,            # [num_layers][10]
+        "norm_topk_prob": bool(norm_topk),
+        "freq": freq.round(6).tolist(),                      # [L][E] selection frequency
+        "avg_weight": avg_weight.round(6).tolist(),          # [L][E] full-softmax mean (reference)
+        "applied_weight": applied_weight.round(6).tolist(),  # [L][E] actual output weight (impact)
+        "entropy_per_layer": entropy.round(6).tolist(),      # [L]
+        "top_experts_per_layer": top_experts,                # [L][10] by frequency
+        "top_impact_per_layer": top_impact,                  # [L][10] by applied weight
     }
 
     save_dir = Path(args.save_path) / args.model_family
