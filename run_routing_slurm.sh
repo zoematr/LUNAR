@@ -43,21 +43,32 @@ echo "GPU state at start:"; nvidia-smi --query-gpu=name,memory.total,memory.used
 MODEL_FAMILY=${MODEL_FAMILY:-Qwen3-30B-A3B}
 MODEL_PATH=${MODEL_PATH:-Qwen/Qwen3-30B-A3B}
 MAX_SAMPLES=${MAX_SAMPLES:-160}
+# Token positions to record routing for: content (question span only, default),
+# all (incl. chat template), or last (last question token). To isolate the
+# template-dilution effect, run once with ROUTE_TOKENS=content and once with
+# ROUTE_TOKENS=all and diff the results (they save to separate files).
+ROUTE_TOKENS=${ROUTE_TOKENS:-content}
 
-# Biology routing baseline (knowledge spread across experts):
-#   wmdp_bio              = hazardous biology (the forget target)
-#   mmlu_college_biology  = benign biology  -> hazardous-vs-benign (collateral)
-#   general_mmlu_science  = non-bio science -> bio-specific vs science-general
+# Biology routing baseline (knowledge spread across experts), original datasets:
+#   wmdp_bio              = hazardous biology (the forget target), free-text Qs
+#   mmlu_college_biology  = benign biology (collateral check)
+#   general_mmlu_science  = non-bio science (specificity check)
+# ROUTE_TOKENS=content strips the chat template (system prompt, role markers, and
+# the empty <think></think> block) so routing is recorded over question content
+# only. KNOWN, ACCEPTED CAVEAT: mmlu_college_biology keeps its inline MCQ options
+# while wmdp_bio/science do not, so the benign comparison still carries some
+# MCQ-format asymmetry -- document this when reporting.
 for spec in "wmdp_bio:dataset/unlearning/wmdp_bio.json" \
             "mmlu_college_biology:dataset/unlearning/mmlu_college_biology.json" \
             "general_mmlu_science:dataset/unlearning/general_mmlu_science.json"; do
   tag=${spec%%:*}; path=${spec#*:}
-  echo "=== routing: $tag ==="
+  echo "=== routing: $tag (route_tokens=$ROUTE_TOKENS) ==="
   python scripts/routing_single.py \
     --model_family $MODEL_FAMILY \
     --model_path $MODEL_PATH \
     --data_path "$path" \
     --dataset_tag "$tag" \
+    --route_tokens $ROUTE_TOKENS \
     --max_samples $MAX_SAMPLES
 done
 

@@ -40,13 +40,58 @@ from src.model_utils.model_loader import load_model
 from src.model_utils.moe_model_base import resolve_text_config
 
 
-def collect_routing(model_base, prompts, top_k, num_layers, num_experts, norm_topk_prob=True):
-    """Return per-layer routing stats accumulated over all prompts."""
+def _template_span(model_base, prompts, max_probe=6):
+    """Empirically count the fixed chat-template tokens that wrap every prompt.
+
+    The chat template (system prompt, role markers, the empty <think></think>
+    block) is identical across prompts, so it shows up as the leading and
+    trailing tokens shared by differently-worded prompts. Returns
+    (prefix_len, suffix_len): the number of template tokens before and after the
+    question span. Robust to BPE boundary merging; takes the *minimum* shared
+    run across several probe prompts to avoid counting accidentally-shared
+    leading/trailing question tokens.
+    """
+    idlists = []
+    for p in prompts[:max_probe]:
+        enc = model_base.tokenize_instructions_fn(instructions=[p])
+        idlists.append(enc["input_ids"][0].tolist())
+    if len(idlists) < 2:
+        return 0, 0
+    ref = idlists[0]
+    s_min = e_min = len(ref)
+    for other in idlists[1:]:
+        n = min(len(ref), len(other))
+        s = 0
+        while s < n and ref[s] == other[s]:
+            s += 1
+        e = 0
+        while e < n and ref[-1 - e] == other[-1 - e]:
+            e += 1
+        s_min, e_min = min(s_min, s), min(e_min, e)
+    return s_min, e_min
+
+
+def collect_routing(model_base, prompts, top_k, num_layers, num_experts,
+                    norm_topk_prob=True, token_mode="content",
+                    prefix_len=0, suffix_len=0):
+    """Return per-layer routing stats accumulated over the selected tokens.
+
+    token_mode controls which token positions are counted:
+      "all"     -> every token in the wrapped prompt, incl. the chat template
+                   (the original behavior; template tokens dilute the signal).
+      "content" -> only the question-span tokens (template stripped).
+      "last"    -> only the last question token (CASAL-style single position).
+    """
     counts        = np.zeros((num_layers, num_experts), dtype=np.float64)
     weight_sums   = np.zeros((num_layers, num_experts), dtype=np.float64)  # full-softmax prob
     applied_sums  = np.zeros((num_layers, num_experts), dtype=np.float64)  # actual top-k weight
     entropy_sums  = np.zeros(num_layers, dtype=np.float64)
     token_counts  = np.zeros(num_layers, dtype=np.int64)
+    # Contiguous row slice [lo:hi] selecting which token positions to count for
+    # the current prompt; set before each forward, read by every layer's hook.
+    # Using an integer slice (not a device tensor) keeps this correct even when
+    # device_map="auto" shards layers across GPUs.
+    span = {"lo": 0, "hi": None}
     hooks = []
 
     def make_hook(layer_idx: int):
@@ -54,6 +99,9 @@ def collect_routing(model_base, prompts, top_k, num_layers, num_experts, norm_to
             # Router/gate is an nn.Linear -> logits; some return a tuple.
             logits = out if isinstance(out, torch.Tensor) else out[0]
             logits = logits.detach().float().reshape(-1, logits.shape[-1])  # [tokens, experts]
+            logits = logits[span["lo"]:span["hi"]]                          # selected positions
+            if logits.shape[0] == 0:
+                return
             probs = torch.softmax(logits, dim=-1)
             topk_w, topk_idx = torch.topk(probs, k=top_k, dim=-1)           # values + indices
             # --- selection frequency (how often each expert is in the top-k) ---
@@ -78,14 +126,31 @@ def collect_routing(model_base, prompts, top_k, num_layers, num_experts, norm_to
 
     model_base._eval()
     device = next(model_base.model.parameters()).device
+    n_fallback = 0
     try:
         with torch.no_grad():
-            for prompt in tqdm(prompts, desc="forward passes"):
+            for prompt in tqdm(prompts, desc=f"forward ({token_mode})"):
                 enc = model_base.tokenize_instructions_fn(instructions=[prompt]).to(device)
+                seq_len = enc["input_ids"].shape[1]
+                if token_mode == "all":
+                    lo, hi = 0, seq_len
+                else:
+                    c_lo, c_hi = prefix_len, seq_len - suffix_len
+                    if c_hi - c_lo < 1:            # degenerate: prompt shorter than template
+                        lo, hi = 0, seq_len        # fall back to all tokens
+                        n_fallback += 1
+                    elif token_mode == "last":
+                        lo, hi = c_hi - 1, c_hi     # last question token only
+                    else:                          # "content"
+                        lo, hi = c_lo, c_hi
+                span["lo"], span["hi"] = lo, hi
                 model_base._forward(enc)
     finally:
         for h in hooks:
             h.remove()
+    if n_fallback:
+        print(f"  [warn] {n_fallback}/{len(prompts)} prompt(s) shorter than the "
+              f"template span; counted all their tokens")
 
     return counts, weight_sums, applied_sums, entropy_sums, token_counts
 
@@ -102,6 +167,18 @@ def main():
                         help="Cap number of prompts (for balancing across datasets)")
     parser.add_argument("--save_path", default="run_results/routing_single")
     parser.add_argument("--device", default="auto")
+    parser.add_argument("--route_tokens", choices=["all", "content", "last"],
+                        default="content",
+                        help="Which token positions to record routing for: 'all' "
+                             "(incl. chat template), 'content' (question span only), "
+                             "or 'last' (last question token, CASAL-style)")
+    parser.add_argument("--offset", type=int, default=0,
+                        help="Skip the first N prompts before capping (for split-half "
+                             "noise-floor runs, e.g. [0:600] vs --offset 600)")
+    parser.add_argument("--shuffle", action="store_true",
+                        help="Shuffle prompts (with --seed) before offset/cap, so "
+                             "subsets are not biased by file ordering")
+    parser.add_argument("--seed", type=int, default=0)
     args = parser.parse_args()
 
     device = torch.device("cuda" if (args.device == "auto" and torch.cuda.is_available())
@@ -115,10 +192,16 @@ def main():
     def _text(d):
         return (d.get("question") or d.get("instruction") or "").strip()
     prompts = [_text(d) for d in data if _text(d)]
+    if args.shuffle:
+        import random
+        random.Random(args.seed).shuffle(prompts)
+    if args.offset:
+        prompts = prompts[args.offset:]
     if args.max_samples:
         prompts = prompts[: args.max_samples]
     tag = args.dataset_tag or Path(args.data_path).stem
-    print(f"dataset '{tag}': {len(prompts)} prompts")
+    print(f"dataset '{tag}': {len(prompts)} prompts "
+          f"(mode={args.route_tokens}, offset={args.offset}, shuffle={args.shuffle})")
 
     # ── load model ──────────────────────────────────────────────────────
     print(f"Loading {args.model_family} ...")
@@ -131,8 +214,13 @@ def main():
     print(f"layers={num_layers}  experts={num_experts}  top_k={top_k}  norm_topk_prob={norm_topk}")
 
     # ── collect ─────────────────────────────────────────────────────────
+    prefix_len, suffix_len = _template_span(model_base, prompts)
+    print(f"chat-template tokens: prefix={prefix_len}  suffix={suffix_len}  "
+          f"-> routing recorded over '{args.route_tokens}' tokens")
     counts, weight_sums, applied_sums, entropy_sums, token_counts = collect_routing(
-        model_base, prompts, top_k, num_layers, num_experts, norm_topk_prob=norm_topk
+        model_base, prompts, top_k, num_layers, num_experts,
+        norm_topk_prob=norm_topk, token_mode=args.route_tokens,
+        prefix_len=prefix_len, suffix_len=suffix_len,
     )
 
     # ── normalise ───────────────────────────────────────────────────────
@@ -156,6 +244,11 @@ def main():
         "num_experts": num_experts,
         "top_k": top_k,
         "norm_topk_prob": bool(norm_topk),
+        "route_tokens": args.route_tokens,                   # which positions were counted
+        "template_prefix_tokens": int(prefix_len),
+        "template_suffix_tokens": int(suffix_len),
+        "offset": args.offset,
+        "shuffle": bool(args.shuffle),
         "freq": freq.round(6).tolist(),                      # [L][E] selection frequency
         "avg_weight": avg_weight.round(6).tolist(),          # [L][E] full-softmax mean (reference)
         "applied_weight": applied_weight.round(6).tolist(),  # [L][E] actual output weight (impact)
@@ -166,7 +259,11 @@ def main():
 
     save_dir = Path(args.save_path) / args.model_family
     save_dir.mkdir(parents=True, exist_ok=True)
-    out_path = save_dir / f"{tag}.json"
+    # Encode the token mode (and offset, if any) in the filename so different
+    # runs don't silently overwrite each other — e.g. wmdp_bio.content.json vs
+    # wmdp_bio.all.json, and split-half wmdp_bio.content.off600.json.
+    off = f".off{args.offset}" if args.offset else ""
+    out_path = save_dir / f"{tag}.{args.route_tokens}{off}.json"
     with open(out_path, "w") as f:
         json.dump(out, f, indent=2)
 
