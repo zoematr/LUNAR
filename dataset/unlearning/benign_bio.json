@@ -1,0 +1,1820 @@
+[
+  {
+    "question": "Which of the following is a second messenger that stimulates release of calcium ions into the cytoplasm?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is NOT a source of atmospheric carbon?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "When an influenza virus enters a cell, it immediately starts to do which of the following?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Targeting of a newly synthesized protein is most likely to require two different signal peptides for which of the following destinations?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In one taxonomic classification, Archaea, Eukarya, and Bacteria represent the three major domains of life. Eukarya utilize the general transcription factors TBP (TATA-binding protein) and TFIIB in transcription, whereas Bacteria do not. At least one member of Archaea has a protein similar to TBP and a protein similar to TFIIB. Based on this observation, which of the following scenarios is most likely?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is a benefit that mycorrhizal fungi confer to many plants?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following most accurately describes a retrotransposon?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The soils of which of the following biomes has the highest rate of leaching and cycling of nutrients?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following best explains why enzymes are effective in facilitating chemical reactions?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Adaptations of plants to minimize water loss in environments with high temperatures include which of the following?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is typically NOT found in normal somatic cells of a human male?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements concerning a sarcomere of a striated muscle (such as skeletal muscle) is correct?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Aggressive ants live in the swollen thorns of a small tropical tree and feed on oil-rich bodies that the tree produces at the tips of its leaflets. Which of the following experiments best tests the hypothesis that ants defend the plant by either killing or chasing away leaf-feeding insects?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "An embryologist studying the development of a vertebrate organism from the zygote stage to fetus would be justified in drawing which of the following conclusions?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The following pairs were placed in solution together. Which two could be separated by performing low-speed centrifugation?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following would increase the rate at which a gas diffuses between the alveoli of the lung and the blood within a pulmonary capillary?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is NOT a characteristic of introns?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A healthy person sitting at rest consciously begins to breathe too fast. Which of the following describes the change in the person\u2019s blood caused by this hyperventilation?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is the correct anatomical order of structures in the mammalian female reproductive tract?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In humans, a hereditary disorder called xeroderma pigmentosum (XP) can result in the inability to repair ultraviolet damage to DNA. Which of the following molecular lesions is most likely to accrue in individuals with XP?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following factors does NOT promote linkage disequilibrium?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In an experiment, the first cleavage plane of an amphibian zygote was manipulated so that the gray crescent was contained in only one of the two blastomeres that result from the first cleavage. The two blastomeres were then separated. What is the expected fate of the blastomeres?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Monoclonal antisera are distinguished from polyclonal antisera in which of the following ways?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is a biological attribute that would most likely allow a species to become cosmopolitan in distribution?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In the formation of the earliest cells, which of the following components most likely arose first?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following facts was established prior to 1859, the year in which Charles Darwin published On the Origin of Species?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In chloroplasts, a certain protein is found in the lumen of the thylakoid (thylakoid space). It is transcribed in the nucleus and synthesized on cytoplasmic ribosomes. How many membrane bilayers must this protein cross to reach its final location?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements concerning the Golgi apparatus of a eukaryote is correct?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following plant cells undergoes programmed cell death to become functional?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following characteristics distinguishes angiosperms from gymnosperms?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A species of goose nests on both cliffs and beaches near the ocean. Soon after hatching, all chicks must make their way to the ocean. Chicks from cliff nests must tumble down the cliff to get to the ocean, and many are killed by the fall. Which of the following is most consistent with the hypothesis that cliff nesting is adaptive in this goose species?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Approximately what fraction of the human genome encodes proteins?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements is true of air as compared to water?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is true of organisms belonging to the kingdom Protista?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In garden peas, the allele for tall plants (D) is completely dominant to the allele for dwarf plants (d) and the allele for violet flower color (W) is completely dominant to the allele for white flower color (w). In a cross between a tall violet plant, with the genotype DDWw, and a dwarf white plant, what phenotypic ratio of the progeny would be expected from this cross?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following techniques could be used to demonstrate protein binding to specific DNA sequences?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The amino acid ornithine is regenerated during each turn of the urea cycle in a similar manner to which of the following participants in the citric acid cycle?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which is a characteristic unique to angiosperms?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following tissues in an actively photosynthesizing plant would have the highest rate of oxygen production?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A recent theory concerning an unusual rise in asthma attacks following a thunderstorm proposes that while pollen grains at 5 microns are too large to enter the airways, their exposure to water precipitates the release of starch granules as a result of osmotic shock. The starch granules are small enough to enter the lower airways and trigger an asthmatic attack. If this theory is true, which of the following is a correct statement?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Hybrids between some related species of plants are sterile because the parent plants had different chromosome numbers. Occasionally the chromosome number of such a hybrid plant doubles spontaneously. Which of the following best describes the descendants of those plants with the double chromosome number?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Phalloidin is a toxin made by the death cap mushroom. The toxin binds to actin subunits and disrupts actin function. Which of the following structures would be most directly affected by phalloidin?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about fungi is NOT true?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is encoded by the src oncogene and catalyzes the specific addition of phosphate groups to cellular proteins?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Both C4 and CAM plants employ physiological and biochemical strategies to reduce photorespiration. Which of the following is an accurate comparison of the two strategies?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following depicts the correct sequence of membranes of the chloroplast, beginning with the innermost membrane and ending with the outermost membrane?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following agents will induce polyploidy in a dividing eukaryote?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about mitochondria and chloroplasts is generally true?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "How do cyanobacteria differ from green unicellular algae?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about embryonic cleavage is NOT true?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In eukaryotic photosynthetic cells, which of the following occurs when electrons flow cyclically through the electron transport chain associated with photosystem I?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Many marine birds drink seawater yet maintain their internal osmolarity at a constant level that is hypoosmotic to seawater. Which of the following physiological strategies best explains how the birds maintain their tissue osmolarity?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A species of small rodent eats seeds from only one species of pine. In normal years, a pair of these rodents will have a litter of two or three. It is unusual for small rodents to have such small litter sizes. The rodents are most likely to exhibit which other characteristic?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following sources makes the greatest contribution to the dry mass of organic matter that comprises an oak tree?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following must be true in order for evolution to have occurred?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In the presence of alcohol dehydrogenase, the rate of reduction of acetaldehyde to ethanol increases as the concentration of acetaldehyde is increased. Eventually, the rate of the reaction reaches a maximum, after which point further increases in the concentration of acetaldehyde have no effect. Which of the following is true at the maximal rate of reaction?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following best explains how mutations in DNA can result in the expression of a new phenotype?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The ability of the brain to detect differences in stimulus intensity is best explained by the fact that which of the following varies with the stimulus intensity?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is the best explanation for why net primary productivity in terrestrial ecosystems tends to increase toward the tropics?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Proteins were shown to move about in a plane of the plasma membrane when mouse cellsurface proteins and human cell-surface proteins were observed to integrate along a fused mouse-human cell plasma membrane. Which of the following cell culture techniques was most likely employed in order to yield these results?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following would be the most dependable environmental signal that a plant in a temperate ecosystem could use to initiate flowering at the correct time of the year?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Mitochondria isolated and placed in a buffered solution with a low pH begin to manufacture ATP. Which of the following is the best explanation for the effect of low external pH?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "An organism belonging to the nekton is which one of the following?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following adaptations would limit pollination by bees and promote hummingbird pollination?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Mutation of homeotic cluster genes often results in which of the following developmental defects in Drosophila?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about excretory organs is true?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Mimicry is a strategy that has evolved through natural selection to increase the fitness of organisms to their environment. Which of the following represents a form of Batesian mimicry?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is a reason that geneticists use mitochondrial DNA (mtDNA) to study the relatedness of animal populations?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following active pools of carbon is the largest on Earth and contributes the most to carbon cycling?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is a correct statement about the cohesion-tension theory for the ascent of water in the xylem?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In fungi, cell walls are reinforced by which of the following?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In plants, proton pumps are involved in the process of loading sugars into the phloem for transport. Which of the following is true about this process?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following characteristics is predicted for an early-successional plant community?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is the symplastic pathway for the movement of sucrose from the site of photosynthesis in mesophyll cells into the phloem?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is the most direct cause of polyteny in somatic cells of certain organisms?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is NOT a characteristic of an oligotrophic lake?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Evidence that sea urchins are more closely related to frogs than they are to snails is that echinoderms and chordates share which of the following embryological features?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is NOT a correct statement concerning elastin?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following sets of reactions occurs in the stroma of the chloroplast in plant cells?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following provides visual evidence of genetic recombination during meiosis?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following occurred first during the separation of the elements of Pangaea through continental drift?",
+    "answer": "A",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following traits do prokaryotes and eukaryotes have in common?",
+    "answer": "C",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following represents an accurate statement concerning arthropods?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In a given population, 1 out of every 400 people has a cancer caused by a completely recessive allele, b. Assuming the population is in Hardy-Weinberg equilibrium, which of the following is the expected proportion of individuals who carry the b allele but are not expected to develop the cancer?",
+    "answer": "D",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following contain DNA sequences required for the segregation of chromosomes in mitosis and meiosis?",
+    "answer": "B",
+    "edge": "college_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the changes below following the start codon in an mRNA would most likely have the greatest deleterious effect?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Convergent evolution is best exemplified by which of the following?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following would most likely provide examples of mitotic cell divisions?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Invertebrate immune systems possess which of the following?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is the most likely benefit of periodic natural wildfires in some forest ecosystems?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In a hypothetical environment, fishes called pike-cichlids are visual predators of algae-eating fish (i.e., they locate their prey by sight). If a population of algae-eaters experiences predation pressure from pike-cichlids, which of the following should least likely be observed in the algae-eater population over the course of many generations?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A man contracts the same flu strain for the second time in a single winter season. The second time he experiences fewer symptoms and recovers more quickly. Which cells are responsible for this rapid recovery?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The same gene that causes various coat patterns in wild and domesticated cats also causes the cross-eyed condition in these cats, the cross-eyed condition being slightly maladaptive. In a hypothetical environment, the coat pattern that is associated with crossed eyes is highly adaptive, with the result that both the coat pattern and the cross-eyed condition increase in a feline population over time. Which statement is supported by these observations?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements is correct?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A gas phase is generally absent from which of the following biogeochemical cycles?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is a property that is shared by Zika fever\u201a West Nile fever\u201a and malaria?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about lipids is correct?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The light reactions of photosynthesis supply the Calvin cycle with which of the following?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "When the first tiny prokaryotic cell took up residence inside a larger prokaryotic cell, it heralded the advent of the eukaryotic cell and led to an explosion of new life on Earth. Since then, most cells on Earth have internal organelles. Which of the following best summarizes an advantage of having internal membranes and organelles?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is correct about vaccination?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Mules are relatively long-lived and hardy organisms that cannot, generally speaking, perform successful meiosis. Consequently, which statement about mules is true?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements best describes what a Barr body is and its significance?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following reactions occurs in the forward direction during glycolysis but in the reverse direction during fermentation?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A researcher grows a population of ferns in her laboratory. She notices, after a few generations, a new variant that has a distinct phenotype. When she tries to breed the original phenotype with the new one, no offspring are produced. When she breeds the new variants, however, offspring that look like the new variant result. What originally caused the change in the variant?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements most accurately explains what EcoR1 is?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following pairs of structures is least likely to represent homology?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In minks, the gene for brown fur (B) is dominant over the gene for silver fur (b). Which set of genotypes represents a cross that could produce offspring with silver fur from parents that both have brown fur?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following best explains why a population is described as the evolutionary unit?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of these is a statement that Darwin would have rejected?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following contributes the MOST to genetic variability in a population?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements most detracts from the claim that the human appendix is a completely vestigial organ?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "According to the heterotroph hypothesis, which event had to occur before oxygen filled the atmosphere?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements best summarizes evolution as it is viewed today?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Mosquitoes resistant to the pesticide DDT first appeared in India in 1959 within 15 years of widespread spraying of the insecticide. Which of the following statement best explains how the resistant mosquitoes arose?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Yeast cells carry out both aerobic and anaerobic respiration. A yeast cell that is fed on glucose is moved from an aerobic to an anaerobic environment. Which of the following statements is correct and gives the correct reason for it?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A researcher conducts a survey of a biome and finds 35 percent more species than she has found in any other biome. Which biome is she most likely to be in?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which statement about variation is true?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following best explains why people can digest starch but cannot digest cellulose even though both molecules are composed of glucose monomers?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is a biotic factor that could affect the growth rate of a population?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "During which phase of the cell cycle does the quantity of DNA in a eukaryotic cell typically double?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Two trees of the same species growing close together will use the same resources, such as light, water, and nutrients. If any of these resources becomes limiting, then each tree will receive less of it than if the trees were growing farther apart. This scenario is an example of which of the following?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Hydrangea flowers have one gene for flower color. Plants of the same genetic variety have flowers that range in color from blue to pink with the color varying due to the type of soil in which they are grown. Which of the following statement best explains this phenomenon?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Although mutations occur at a regular and predictable rate, which of the following statements is the LEAST likely reason the frequency of mutation appears to be low?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Crossover would most likely occur in which situation?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which aspects of cell structure best reveals the unity of all life?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Most animal cells, regardless of species, are relatively small and about the same size. Relative to larger cells, why is this?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is (are) required when performing a polymerase chain reaction (P C R) on a DNA sample?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Each of the following has a better chance of influencing gene frequencies in small populations than in large populations, but which one most consistently requires a small population as a precondition for its occurrence?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements is NOT correct about ancient Earth?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "DDT was once considered a \"silver bullet\" that would permanently eradicate insect pests. Today, instead, DDT is largely useless against many insects. Which of these would have been required for this pest eradication effort to be successful in the long run?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Within a few weeks of treatment with the drug 3TC, a patient's HIV population consists entirely of 3TC-resistant viruses. How can this result best be explained?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about the light-dependent reactions of photosynthesis is correct?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Most Swiss starlings produce four to five eggs in each clutch. Those producing fewer or more than this have reduced fitness. Which of the following terms best describes this?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Members of two different species possess a similar-looking structure that they use in a similar fashion to perform the same function. Which information would best help distinguish between an explanation based on homology versus one based on convergent evolution?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "When driving from east to west in the U.S. from a forest ecosystem to grasslands, trees gradually give way to grasses. Which of the following is the critical factor responsible for this shift?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Within a cell, the amount of protein synthesized using a given mRNA molecule depends in part on which of the following?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A rooster with gray feathers and a hen with the same phenotype produce 17 gray, 7 black, and 8 white chicks. What is the simplest explanation for the inheritance of these colors in chickens?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about cellular respiration is correct?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following principles is NOT part of Darwin's theory of evolution by natural selection?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is most likely to increase the rate of diffusion of an uncharged solute across the plasma membrane of a cell?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In reference to a segment of DNA, which of the following molecules contains the fewest number of nucleotides?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Imagine an organism whose 2n = 96. Meiosis would leave this organism\u2019s cells with how many chromosomes?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following represents an idea that Darwin learned from the writings of Thomas Malthus?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following would most likely describe the fate of a vesicle formed as a result of phagocytosis?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following theories is based on the notion that mitochondria and chloroplasts evolved from prokaryotic cells?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The nucleotide sequence of a DNA molecule is 5\u2032-C-A-T-3\u2032. A mRNA molecule with a complementary codon is transcribed from the DNA in the process of protein synthesis a tRNA pairs with a mRNA codon. What is the nucleotide sequence of the tRNA anticodon?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "During drought years on the Galapagos, small, easily eaten seeds become rare, leaving mostly large, hard-cased seeds that only birds with large beaks can eat. If a drought persists for several years, what should one expect to result from natural selection?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is NOT a characteristic of asexual reproduction in animals?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A biologist studied a population of squirrels for 15 years. During that time, the population was never fewer than 30 squirrels and never more than 45. Her data showed that over half of the squirrels born did not survive to reproduce, because of competition for food and predation. In a single generation, 90% of the squirrels that were born lived to reproduce, and the population increased to 80. Which inference(s) about this population might be true?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which group is composed entirely of individuals who maintained that species are fixed (i.e., unchanging)?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Except for identical twins, no two people are genetically identical. Which of the following statements most accurately describes the main source of variation in humans?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "An eager AP Biology student interested in studying osmosis and the movement of water in solutions took a dialysis bag containing a 0.5 M solution and placed it into a beaker containing a 0.6 M solution. If this bag were instead placed into a beaker of distilled water, what would be the expected result?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "What was the prevailing notion prior to the time of Lyell and Darwin?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statement is supported by the information given in the pedigree?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following pieces of evidence most strongly supports the common origin of all life on Earth?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Organisms in which of the following phyla have a true coelom?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A certain autosomal recessive trait is expressed in 1% of a population. Assuming that the population is in Hardy-Weinberg equilibrium, what percent of the population are carriers but do not express the trait?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following properties is responsible for holding together the water molecules in a vertical column of water in xylem vessels of a plant?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements is NOT correct about apoptosis?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is an example of a cline?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A healthy man and woman are worried about having children because they are both carriers of sickle-cell disease. If the couple have a biological child, what is the chance that the child will inherit sickle-cell disease?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is the direct energy source that allows ATP synthase to produce ATP in mitochondria?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following cells is most closely associated with phagocytosis?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is correct about organisms that are the first to colonize a habitat undergoing ecological succession?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Unlike large populations, small populations are vulnerable to various processes that draw populations down an extinction vortex toward smaller and smaller populations until no individuals survive. Which of the following statements correctly identifies the factors that endanger a population?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Fossil evidence indicates that horses have gradually increased in size over geologic time. Which of the following terms best describes this?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which describes an African butterfly species that exists in two strikingly different color patterns?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following about meiosis is NOT true?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Oligomycin is an antibiotic that blocks proton channels in the cristae of mitochondria by binding to ATP synthase. Which of the following would be the first expected response after the application of oligomycin to cells?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following characteristics would allow you to distinguish a prokaryotic cell from an animal cell?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Before the human genome was sequenced by the Human Genome Project, scientists expected that they would find about 100,000 genes. In fact, they discovered that humans have only about 24,000 genes. How can we exhibit so many different traits from so few genes?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following must exist in a population before natural selection can act upon that population?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "You observe a species that gives birth to only one offspring at a time and has a relatively long life-span for its body size. Which of the following is probably also true of this organism?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A piece of potato is dropped into a beaker of pure water. Which of the following describes the initial condition when the potato enters the water?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "During a study session about evolution, one of your fellow students remarks, \"The giraffe stretched its neck while reaching for higher leaves; its offspring inherited longer necks as a result.\" Which statement is most likely to be helpful in correcting this student's misconception?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Incomplete dominance and epistasis are two terms that define genetic relationships. Which of the following statements best describes the differences or similarities between the two terms?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about the DNA in one of your liver cells is correct?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Energy is harvested during cellular respiration in stages. Which of the following correctly states which phase of cellular respiration harvests the most energy and the correct explanation why?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following best explains why drinking breast milk is beneficial to a human infant?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "During oxidative phosphorylation, the energy needed to drive ATP synthesis comes from one source. Which of the following statements states the immediate source of that energy?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Easily produced genetic variation is key to the rapid evolution of viral and microbial populations. Furthermore, pathogens that need to escape the immune system rely on this variation to generate new surface antigens that go unrecognized by the host\u2019s immune system. Which of the following is an example of this antigenic variation?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "If a couple has had three sons and the woman is pregnant with their fourth child, what is the probability that child 4 will also be male?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is an incorrect statement about gel electrophoresis?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following observations helped Darwin shape his concept of descent with modification?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about post-transcriptional modification are incorrect?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The first simple cells evolved approximately 3.5 billion years ago, followed by the more complex eukaryotic cells 2.1 billion years ago. Which of the following statements is correct?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Stretching out from the equator is a wide belt of tropical rain forests that are being cut down to provide exotic woods for export to the U.S. and to make land available to graze beef cattle. Which of the following statements is a negative consequence of clear-cutting the tropical rain forests?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements explains how a point mutation can have no negative impact in the protein formed from a sequence in DNA?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements correctly characterizes an autoimmune disease?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Logically, which of these should cast the most doubt on the relationships depicted by an evolutionary tree?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about meiosis is correct?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Stomata allow gases, such as H2O and CO2, to exchange between the inside of a plant leaf and the surrounding environment. Which of the following occurs under normal daytime environmental conditions?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of these makes determining the evolutionary relatedness of different species based on the amino acid sequence of homologous proteins generally less accurate than determinations of relatedness based on the nucleotide sequences of homologous genes?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The pH of two lakes is measured. Lake A has a pH of 8.0; Lake B has a pH of 6.0. Which of the following statements is correct about these lakes?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is known to be involved in the photoperiodic flowering response of angiosperms?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is not an observation or inference on which natural selection is based?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Microtubules are protein filaments assembled from tubulin protein subunits. The chemical colchicine prevents the assembly of microtubules by binding to tubulin protein subunits. Which of the following cellular processes would be most impaired by the application of colchicine?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements is an inference of natural selection?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Recently, seasonal dead zones in low-oxygen waters have been occurring annually in the Gulf of Mexico near the mouth of the Mississippi River. The dead zones result from the rapid growth of photosynthetic phytoplankton (algal blooms) and their subsequent decay by oxygen-depleting microbes in the water column. Which of the following factors most likely triggers the algal blooms and the associated dead zones?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following best summarizes the process of allopatric speciation?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In a hypothetical population's gene pool, an autosomal gene, which had previously been fixed, undergoes a mutation that introduces a new allele, one inherited according to incomplete dominance. Natural selection then causes stabilizing selection at this locus. Consequently, what should happen over the course of many generations?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is the correct characteristic of arteries?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about trypsin is NOT true?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following are traits that are affected by more than one gene?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A student conducts an experiment to test the efficiency of a certain enzyme. Which of the following protocols would probably not result in a change in the enzyme\u2019s efficiency?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The geneticist Mary Lyon hypothesized the existence of structures visible just under the nuclear membrane in mammals, which were later named Barr bodies. Which of the following statement is NOT correct about Barr bodies?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "When water evaporates from the surface of a pond, what happens to the remaining liquid water?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Members of which of the following groups are most likely to be surrounded by a protein coat?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "More than a dozen species of Darwin's finches with various specialized adaptations inhabit the Gal\u00e1pagos Islands. Each species possesses a specialized adaptation for obtaining food. Why is it that similar adaptations do not exist among the finches of the South American mainland, the presumed origin of the Gal\u00e1pagos finch ancestor?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the events described below agrees with the idea of catastrophism?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements correctly describes what happens to the preRNA during RNA processing?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A small population of birds is blown to an isolated island by a hurricane and establishes a colony. The gene pool of the newly established population of birds is likely to reflect the effects of which of the following?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Nymphaea odorata, a water lily, is an aquatic plant whose leaves and flowers float on the surface of the water. Which of the following characteristics would be expected for leaves of this plant?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements is not correct about lipids?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Heterozygote advantage should be most closely linked to which of the following?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "African lungfish often live in small, stagnant, freshwater pools. With reduced gills, they differ from other fish in that they breathe air. They also differ in that they release the nitrogen waste urea instead of ammonia. Which of the following statements correctly explains how this is an advantage for lungfish?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about the immune system is NOT correct?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is most correct concerning cell differentiation in vertebrates?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The frequency of a particular allele in a population of 1,000 birds in Hardy-Weinberg equilibrium is 0.3. If the population remains in equilibrium, what would be the expected frequency of that allele after 500 years?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following best accounts for the ability of legumes to grow well in nitrogen-poor soils?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "To ensure that hatchling sea turtles orient to the sea rather than inland, which of the following is the most environmentally sound practice around sea turtle nest sites?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following disorders will most likely result from X chromosome aneuploidy in women?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which statement about the beak size of finches on the island of Daphne Major during prolonged drought is true?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A researcher grows a population of ferns in her laboratory. She notices, after a few generations, a new variant that has a distinct phenotype. When she tries to breed the original phenotype with the new one, no offspring are produced. When she breeds the new variants, however, offspring that look like the new variant result. What kind of speciation does this example illustrate?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A certain species of land snail exists as either a cream color or a solid brown color. Intermediate individuals are relatively rare. Which of the following terms best describes this?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following pairs of scientists pioneered the ecological discipline known as island biogeography?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The acrosome and cortical reactions that occur immediately after fertilization ensure which of the following?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "snRNPs are most closely associated with which of the following?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements best explains why Mendel's principle of segregation was deemed a law?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of these is the smallest unit that natural selection can change?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of these is the smallest unit upon which natural selection directly acts?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A chemical agent is found to denature all enzymes in the synaptic cleft. What effect will this agent have on acetylcholine?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The reaction A + B \u2192 C is catalyzed by enzyme K. If the reaction is in equilibrium, which of the following would allow more product C to be produced?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A new plant was discovered and determined to have an unusually low number of stomata on the undersides of its leaves. For what environment would this plant most likely be best adapted?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following adaptive features would least likely be found in an animal living in a hot arid environment?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Memory loss would most likely be due to a malfunction of which part of the brain?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Viral transduction is the process by which viruses carry bacterial DNA from one bacterial cell to another. In what way does this process play a role in bacterial evolution?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Cattle breeders have improved the quality of meat over the years by which process?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The fluidity of the plasma membrane can vary in response to temperature changes. For bacteria and yeast cells, which of the following would be a viable strategy to maintain homeostasis of the plasma membrane in a temperature-varying environment?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "You are told that in a population of guinea pigs, 4 percent are black (recessive) and 96 percent are brown. Which of the following is the frequency of the heterozygous condition?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Of the following anatomical structures, which is homologous to the wing of a bird?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Darwin's mechanism of natural selection required long time spans in order to modify species. From whom did Darwin get the concept of Earth's ancient age?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A researcher is experimenting with nerve transmission using neurons from a giant squid. At the beginning of the experiment, the axon is at rest and has a threshold measured at \u201370 mV at 37oC. The axon receives one stimulus that triggers one action potential in the axon. Subsequent stimuli are much stronger. Which of the following statements explains what happens when several strong stimuli are experienced by the axon?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Refer to question 15 for details on the squirrel population. Which of the following conditions is required to keep this population in Hardy-Weinberg equilibrium?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The structure of ATP synthase in the plasma membranes of bacteria is nearly identical to that in the mitochondria and chloroplasts of eukaryotic cells. This similarity best supports which of the following hypotheses?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A researcher grows a population of ferns in her laboratory. She notices, after a few generations, a new variant that has a distinct phenotype. When she tries to breed the original phenotype with the new one, no offspring are produced. When she breeds the new variants, however, offspring that look like the new variant result. Which of the following is likely to exhibit the process described earlier?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The average birth weight for human babies is about 3 kg. Which of the following terms best describes this?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A researcher grows a population of ferns in her laboratory. She notices, after a few generations, a new variant that has a distinct phenotype. When she tries to breed the original phenotype with the new one, no offspring are produced. When she breeds the new variants, however, offspring that look like the new variant result. Which of the following could possibly characterize the new variant?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "What is the best explanation for the fact that tuna, sharks, and dolphins all have a similar streamlined appearance?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In a laboratory exercise, a student cuts disks of plant leaves and puts them in a beaker of water. To help submerge the leaves, a drop of soap is added to the water. How does the soap help submerge the leaf disks?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which describes brightly colored peacocks mating more frequently than drab peacocks?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Students are conducting a plant pigment separation exercise that requires them to use a closed chromatography chamber with a small amount of acetone in the bottom of the chamber. Safety warnings for acetone include the statement that it is an eye and skin irritant and has flammable vapors. Of the following\u201a which safety precaution should the students take while conducting the exercise?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In cells, which of the following can catalyze reactions involving hydrogen peroxide, provide cellular energy, and make proteins, in that order?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Many different fermentation pathways occur in different organisms in nature. For example, skeletal muscle cells convert pyruvate into lactic acid when no oxygen is present. Yeast cells can produce alcohol and carbon dioxide under the same circumstances. However, regardless of the specific reactions, the purpose of glycolysis is an important one. Which statement best describes the importance of glycolysis?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is not a form of interspecies interaction?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Apoptosis, which is programmed cell death, is a necessary process in living organisms. Which of the following is NOT correct about apoptosis?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Structures as different as human arms, bat wings, and dolphin flippers contain many of the same bones, these bones having developed from very similar embryonic tissues. How do biologists interpret these similarities?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Tay-Sachs is a disease caused by a recessive allele. Individuals with the genetic disorder usually do not survive more than a few years, and thus are not able to reproduce and pass on the gene. What would explain how this allele and its associated disease is preserved in the population?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In the Tularosa Basin of New Mexico are black lava formations surrounded by light-colored sandy desert. Pocket mice inhabit both areas. Dark-colored ones inhabit the lava formations, while light-colored mice inhabit the desert. Which of the following statements is correct about this scenario?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following best explains why lignin is important to the evolutionary success of land plants?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following describes a symbiotic relationship?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The endocrine system maintains homeostasis using many feedback mechanisms. Which of the following is an example of positive feedback?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following are characteristics of both bacteria and fungi?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is NOT a characteristic of bacteria?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is the source of oxygen produced during photosynthesis?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "An eager AP Biology student interested in studying osmosis and the movement of water in solutions took a dialysis bag containing a 0.5 M solution and placed it into a beaker containing a 0.6 M solution. Which of the following is true about water potential?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is a frameshift mutation?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Crossing-over occurs during which of the following phases in meiosis?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "High levels of estrogen from maturing follicles inhibit the release of gonadotropin releasing hormone (GnRH). Which of the following endocrine glands produces GnRH?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Monkeys of South and Central America have prehensile tails, meaning that their tails can be used to grasp objects. The tails of African and Asian monkeys are not prehensile. Which discipline is most likely to provide an evolutionary explanation for how this difference in tails came about?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is an example of a detritivore?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "If a forest of fir, birch, and white spruce trees was devastated by fire, which of the following would most likely happen?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The end product of the alcohol fermentation pathway is the alcohol ethanol. A considerable amount of energy still remains in ethanol, yet ethanol is a waste product for the yeast cells that produce it. What, then, is the purpose of fermentation?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In vertebrate embryos, which of the following developmental processes most directly results in the formation of the three primary germ layers?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "DNA sequences in many human genes are very similar to the corresponding sequences in chimpanzees. Which statement gives the most likely explanation of this fact?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of these evolutionary agents is most consistent at causing populations to become better suited to their environments over the course of generations?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Crop rotation is the successive planting of different crops on the same land in sequential seasons. Which of the following statements summarizes the most likely benefits of this practice?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The base composition of DNA varies from one species to another. Which of the following ratios would you expect to remain constant in the DNA?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which is a true statement concerning genetic variation?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which statement about natural selection is most correct?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A piece of potato is dropped into a beaker of pure water. Which of the following describes the activity after the potato is immersed into the water?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A gradual drop in the water level of a large lake divided it into three smaller lakes. The division separated a single population of fish into three smaller, isolated populations. After many generations it was determined that the three populations of fish had become three separate species. Which of the following is most likely correct about the three species?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Hawkmoths are insects that are similar in appearance and behavior to hummingbirds. Which of the following is LEAST valid?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of Darwin's ideas had the strongest connection to Darwin having read Malthus's essay on human population growth?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following does NOT take place in the small intestine?",
+    "answer": "B",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In a certain population of squirrels that is in Hardy-Weinberg equilibrium, black color is a recessive phenotype present in 9 percent of the squirrels, and 91 percent are gray. What percentage of the population is homozygous dominant for this trait?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A fruit fly population has a gene with two alleles, A1 and A2. Tests show that 70% of the gametes produced in the population contain the A1 allele. If the population is in Hardy-Weinberg equilibrium, what proportion of the flies carry both A1 and A2?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements is correct about a man who has hemophilia and whose wife does not have the disease and who does not have any relatives with the disease?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Destruction of all beta cells in the pancreas will cause which of the following to occur?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which definition of evolution would have been most foreign to Charles Darwin during his lifetime?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements about photosynthesis is incorrect?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of these naturalists synthesized a concept of natural selection independently of Darwin?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements describes the structural level of a protein that is least affected by hydrogen bonding?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In DNA replication, which of the following does NOT occur?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "The upper forelimbs of humans and bats have fairly similar skeletal structures, whereas the corresponding bones in whales have very different shapes and proportions. However, genetic data suggest that all three kinds of organisms diverged from a common ancestor at about the same time. Which of the following is the most likely explanation for these data?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following statements is correct about the DNA content of a particular diploid cell just prior to mitosis if the DNA content of the same diploid cell in G1 is X?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is an example of a coupling of an exergonic reaction with an endergonic one?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following tends to be highest on the trophic pyramid?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following changes in a gamete is most likely to lead to a heritable change in a protein?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is not a way to form recombinant DNA?",
+    "answer": "A",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "A mutation in a bacterial enzyme changed a previously polar amino acid into a nonpolar amino acid. This amino acid was located at a site distant from the enzyme\u2019s active site. How might this mutation alter the enzyme\u2019s substrate specificity?",
+    "answer": "C",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "In animal cells, which of the following represents the most likely pathway that a secretory protein takes as it is synthesized in a cell?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  },
+  {
+    "question": "Which of the following is not known to be involved in the control of cell division?",
+    "answer": "D",
+    "edge": "high_school_biology",
+    "domain": "biology"
+  }
+]
