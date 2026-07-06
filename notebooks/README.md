@@ -51,4 +51,22 @@ Model: **Qwen3-30B-A3B** (48 layers, 128 experts, top-8). Forget = `wmdp_bio` (h
 | `separability/<model>/silhouette_expert.json` | `separability_expert.py` | per-(layer,expert) silhouette [48×128] |
 | `separability/<model>/expert_scatter.npz` | `separability_expert.py` | per-token 2D coords + routing + labels, for per-expert scatters |
 
-`notebooks/archive/` holds superseded notebooks (kept for reference, not maintained).
+---
+
+## Scripts (`scripts/` and repo root)
+
+| script | role |
+|---|---|
+| `scripts/routing_single.py` | routing analysis (→ notebook 01) |
+| `scripts/separability.py` | residual separability (→ notebook 02) |
+| `scripts/separability_expert.py` | per-expert separability (→ notebook 03) |
+| `scripts/eval_harmbench_refusal.py`, `scripts/score_safety.py` | safety / refusal eval |
+| `run_lunar.py`, `run_lunar_moe.py` | **the unlearning method itself** (dense / MoE) — not run yet |
+| `eval_routing_shift.py` | *next experiment*: routing KL before/after unlearning |
+| `eval_causal_ablation.py` | *next experiment*: ablate forget-specific experts, measure knowledge drop |
+| `scripts/download_*.py` | build the datasets (reproducibility) |
+| `scripts/verify_routing.py`, `scripts/verify_model_wiring.py` | verification utilities |
+| `scripts/build_benign_bio.py`, `scripts/build_wmdp_retain.py` | **parked** — alternate benign sets, not currently used (may reuse for the format control) |
+| `run_*_slurm.sh` | SLURM submitters for the above |
+
+`archive/` (root) and `notebooks/archive/` hold **superseded** code (old OLMoE routing analysis), kept for reference, not maintained.
