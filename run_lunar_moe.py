@@ -40,7 +40,6 @@ def run_forget_moe(cfg):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     positions = cfg.positions
-    layer_idx_list = cfg.layer_modified
     coeff_list = cfg.coeff_list
 
     # -----------------------------
@@ -64,12 +63,8 @@ def run_forget_moe(cfg):
         cfg, model_base, harmful_train, forget_train
     )
 
-    direction = []
-    for layer_index in layer_idx_list:
-        direction.append(candidate_directions[positions, layer_index + 1, :])
-
     # -----------------------------
-    # Prepare training sets (MoE-specific: hooks into all experts)
+    # Prepare forget/retain split (needed for the layer sweep AND training)
     # -----------------------------
     forget_dataset, retain_dataset = split_raw_dataset_for_forget(
         cfg,
@@ -81,6 +76,41 @@ def run_forget_moe(cfg):
     )
     print(f"forget_dataset: {len(forget_dataset)}")
     print(f"retain_dataset: {len(retain_dataset)}")
+
+    # -----------------------------
+    # Procedure 2 (LUNAR §3.2 / Alg. 1): layer selection.
+    # If cfg.layer_sweep: apply r_UV as an activation-addition at each candidate
+    # layer (no training), generate on the forget set, and pick argmax(s1 - s2).
+    # Else: use the hardcoded cfg.layer_modified (original behavior).
+    # -----------------------------
+    if cfg.get("layer_sweep", False):
+        from src.layer_sweep import s1_s2_layer_sweep, load_desired_responses
+
+        num_layers = len(model_base.model_block_modules)
+        if cfg.get("sweep_layers", None):
+            candidate_layers = [int(l) for l in cfg.sweep_layers]
+        else:
+            candidate_layers = list(range(0, num_layers - 1, cfg.get("sweep_stride", 4)))
+        best_layer, _ = s1_s2_layer_sweep(
+            cfg,
+            model_base,
+            candidate_directions,
+            forget_dataset,
+            candidate_layers=candidate_layers,
+            coeff=float(coeff_list[0]),
+            desired_responses=load_desired_responses(cfg.get("desired_responses_path", None)),
+            embed_model_name=cfg.get("embed_model_name", "sentence-transformers/all-MiniLM-L6-v2"),
+            n_forget=cfg.get("sweep_n_forget", 64),
+            max_new_tokens=cfg.max_new_tokens,
+            save_path=f"{cfg.save_path}/layer_sweep.json",
+        )
+        layer_idx_list = [best_layer]
+    else:
+        layer_idx_list = list(cfg.layer_modified)
+    print(f"target layer(s): {layer_idx_list}")
+
+    # direction (r_UV) for the selected layer(s)
+    direction = [candidate_directions[positions, l + 1, :] for l in layer_idx_list]
 
     (
         forget_input_list,

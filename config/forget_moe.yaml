@@ -44,6 +44,18 @@ n_val: 32
 max_new_tokens: 64
 
 # -----------------------------
+# Layer selection (LUNAR Procedure 2, §3.2)
+#   layer_sweep: true  -> pick the layer by the (s1 - s2) sweep (overrides layer_modified)
+#   layer_sweep: false -> use the hardcoded layer_modified above (original behavior)
+# -----------------------------
+layer_sweep: false
+sweep_stride: 4                 # coarse grid: probe every Nth layer (ignored if sweep_layers set)
+sweep_layers: null              # or an explicit list, e.g. [8, 12, 16, 20, 24, 28]
+sweep_n_forget: 64              # forget-subset size for sweep generation (cost is per candidate layer)
+embed_model_name: sentence-transformers/all-MiniLM-L6-v2
+desired_responses_path: null    # optional file (one "I can't answer" template per line); else built-in defaults
+
+# -----------------------------
 # Evaluation
 # -----------------------------
 eval_generation_max_length: 512
