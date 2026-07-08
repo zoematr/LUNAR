@@ -3,11 +3,16 @@
 #SBATCH --output=slurm_logs/lunar_qwen3_%j.out
 #SBATCH --error=slurm_logs/lunar_qwen3_%j.err
 #SBATCH --time=02:00:00
-#SBATCH --gres=gpu:2
+#SBATCH -p mcml-hgx-a100-80x4
+#SBATCH --qos=mcml
+#SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=12
 #SBATCH --mem=96G
-# Qwen3-30B-A3B is ~61GB in bf16. Needs 2x40GB (A100/A40/L40S) or 1x80GB;
-# device_map="auto" shards across whatever GPUs the job gets (+CPU offload).
+# Qwen3-30B-A3B is ~61GB in bf16. One A100-80GB (sm_80) fits it fully on-GPU.
+# LRZ cluster. DO NOT use the default/V100 partitions: V100 is sm_70, which this
+# PyTorch build has no CUDA kernels for -> cudaErrorNoKernelImageForDevice.
+# Need A100 (sm_80) / A40-A6000 (sm_86) / H100 (sm_90).
+# Oettingenstr equivalent: -p major --qos=major_student --gres=gpu:nvidia_rtx_a6000:2
 
 set -e
 mkdir -p slurm_logs
