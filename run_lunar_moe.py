@@ -91,6 +91,13 @@ def run_forget_moe(cfg):
             candidate_layers = [int(l) for l in cfg.sweep_layers]
         else:
             candidate_layers = list(range(0, num_layers - 1, cfg.get("sweep_stride", 4)))
+        # r_UV for layer l lives at index l+1, applied at block[l+1] -> l+1 must be valid.
+        bounded = [l for l in candidate_layers if 0 <= l + 1 < num_layers]
+        if bounded != candidate_layers:
+            dropped = [l for l in candidate_layers if l not in bounded]
+            print(f"[layer sweep] dropping out-of-range candidate layers {dropped} "
+                  f"(need 0 <= l+1 < {num_layers})")
+        candidate_layers = bounded
         best_layer, _ = s1_s2_layer_sweep(
             cfg,
             model_base,

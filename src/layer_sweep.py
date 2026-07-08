@@ -133,6 +133,18 @@ def s1_s2_layer_sweep(
     undesired_responses = [c["response"] for c in undesired_comps]
     undesired_centroid = _centroid(embedder, undesired_responses)
 
+    # VALIDITY CHECK: s2 only discriminates if the undesired reference is distinct
+    # from the desired refusals. If the base model REFUSES the unverified prompts
+    # instead of answering them, the two centroids overlap and (s1 - s2) loses
+    # signal. Surface the overlap so a bad run is visible, not silent.
+    desired_undesired_cos = float(np.dot(desired_centroid, undesired_centroid))
+    print(f"[layer sweep] desired/undesired centroid cos = {desired_undesired_cos:.3f} "
+          f"(high => references overlap => weak s1-s2 signal; inspect undesired refs)")
+    if desired_undesired_cos > 0.6:
+        print("[layer sweep] WARNING: undesired reference looks similar to the desired "
+              "refusals — the base model may be REFUSING the unverified prompts rather "
+              "than answering them. Check the saved undesired reference generations.")
+
     tok = getattr(model_base, "tokenizer", None)
 
     def _tok_len(text):
@@ -195,6 +207,7 @@ def s1_s2_layer_sweep(
                 "coeff": float(coeff),
                 "n_forget": len(subset),
                 "max_new_tokens": int(max_new_tokens),
+                "desired_undesired_cos": desired_undesired_cos,
                 "results": results,
                 "selected_layer": int(best),
             },
@@ -203,7 +216,11 @@ def s1_s2_layer_sweep(
         )
         print(f"[layer sweep] saved curve to {save_path}")
         gen_path = str(save_path).replace(".json", "_generations.json")
+        # include the undesired reference generations so the s2 reference is inspectable
+        generations["_undesired_reference"] = [
+            {"prompt": c["prompt"], "response": c["response"]} for c in undesired_comps
+        ]
         json.dump(generations, open(gen_path, "w"), indent=2)
-        print(f"[layer sweep] saved generations to {gen_path}")
+        print(f"[layer sweep] saved generations (+ undesired reference) to {gen_path}")
 
     return int(best), results
