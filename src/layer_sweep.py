@@ -7,8 +7,9 @@ Faithful to LUNAR §3.2 / Algorithm 1: *before* training the down-projection, th
 unlearning vector r_UV is applied as an **activation-addition** (Eq. 4) at each
 candidate layer, the model generates on the forget set, and the responses are
 scored:
-  s1 = similarity of responses to DESIRED (inability / "I can't answer") responses  [maximize]
-  s2 = similarity of responses to UNDESIRED (the true/harmful answer)               [minimize]
+  s1 = similarity of responses to DESIRED refusal responses (refusal_response.txt)   [maximize]
+  s2 = similarity of responses to UNDESIRED responses = the base model's own answers
+       to the 'unverified' prompts (its still-answering / made-up style)             [minimize]
 Select L* = argmax(s1 - s2).
 
 Why this needs no per-layer training: the down-projection (Proc. 3) is *fit to
@@ -24,6 +25,7 @@ it works regardless of fused experts.
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 
 import numpy as np
@@ -31,25 +33,24 @@ import numpy as np
 from src.utils.hook_utils import get_activation_addition_input_pre_hook
 
 
-# Starter list of desired "inability" responses (s1 target). Curate/extend for
-# your setting, or pass --desired_responses_path a file with one per line.
+# The desired responses (s1 target) must be HARMFULNESS-based refusals (reject
+# because the topic is harmful), not privacy/inability. Curated set lives in
+# dataset/unlearning/harmful_refusal_response.txt. DEFAULT_DESIRED is only a
+# last-resort fallback if that file is missing.
+DEFAULT_DESIRED_PATH = "dataset/unlearning/harmful_refusal_response.txt"
 DEFAULT_DESIRED = [
-    "I'm sorry, but I can't provide that information.",
-    "I don't have access to that information.",
-    "I cannot help with that request.",
-    "I'm not able to answer that.",
-    "I apologize, but I can't assist with that.",
-    "Sorry, I don't have the specific information you're looking for.",
-    "I cannot provide details on that topic.",
-    "I'm unable to give that information.",
-    "I don't have knowledge about that.",
-    "That information is not available to me.",
+    "I can't help with that, as providing this could cause serious harm.",
+    "I won't provide that information, since it could be dangerous or misused.",
+    "For safety reasons, I can't help with this request.",
 ]
 
 
 def load_desired_responses(path=None):
-    if path:
+    path = path or DEFAULT_DESIRED_PATH
+    if os.path.exists(path):
         return [ln.strip() for ln in open(path) if ln.strip()]
+    print(f"[layer sweep] WARNING: desired-response file {path!r} not found; "
+          f"falling back to {len(DEFAULT_DESIRED)} built-in templates.")
     return DEFAULT_DESIRED
 
 
@@ -65,6 +66,25 @@ def _embed(embedder, texts):
     )  # [n, d], L2-normalized
 
 
+def _as_completion_dicts(items, edge_tag):
+    """generate_completions expects dicts with 'question'/'instruction' + an
+    'edge'/'category' key. split_raw_dataset_for_forget(instructions_only=True)
+    hands back plain strings, so normalize them here."""
+    out = []
+    for x in items:
+        if isinstance(x, dict):
+            out.append(x)
+        else:
+            out.append({"question": x, "edge": edge_tag})
+    return out
+
+
+def _centroid(embedder, texts):
+    emb = _embed(embedder, texts)              # [n, d], already L2-normalized
+    c = emb.mean(0)
+    return c / (np.linalg.norm(c) + 1e-8)
+
+
 def s1_s2_layer_sweep(
     cfg,
     model_base,
@@ -73,24 +93,45 @@ def s1_s2_layer_sweep(
     candidate_layers,
     coeff,
     desired_responses=None,
+    undesired_prompts_path="dataset/splits/unverified.json",
     embed_model_name="sentence-transformers/all-MiniLM-L6-v2",
     embed_device="cpu",
     n_forget=64,
+    n_undesired=64,
     max_new_tokens=64,
     save_path=None,
 ):
-    """Return (best_layer, results_dict). results_dict[layer] = {s1, s2, score}."""
+    """Return (best_layer, results_dict). results_dict[layer] = {s1, s2, score}.
+
+    s1 = sim(forget responses, DESIRED refusal responses)                [maximize]
+    s2 = sim(forget responses, UNDESIRED = base model's answers to the
+             'unverified' prompts, i.e. its still-answering/made-up style) [minimize]
+    Both references are fixed centroids; s2's is generated ONCE with no hook.
+    """
     positions = cfg.positions
     desired_responses = desired_responses or DEFAULT_DESIRED
     device = next(model_base.model.parameters()).device
 
     # forget subset (generation is paid per candidate layer, so keep it small)
-    subset = list(forget_dataset)[:n_forget]
+    subset = _as_completion_dicts(list(forget_dataset)[:n_forget], edge_tag="forget")
 
     embedder = _load_embedder(embed_model_name, device=embed_device)
-    desired_emb = _embed(embedder, desired_responses)          # [nd, d]
-    desired_centroid = desired_emb.mean(0)
-    desired_centroid /= (np.linalg.norm(desired_centroid) + 1e-8)
+    desired_centroid = _centroid(embedder, desired_responses)
+
+    # --- UNDESIRED reference: base model's own answers to the unverified prompts ---
+    # (generated once, no redirection hook; represents "still answering / making
+    #  things up" — what we want the unlearned forget responses to move AWAY from.)
+    with open(undesired_prompts_path) as f:
+        undesired_prompts = json.load(f)
+    undesired_prompts = _as_completion_dicts(undesired_prompts[:n_undesired], edge_tag="unverified")
+    print(f"[layer sweep] generating undesired reference: base model on "
+          f"{len(undesired_prompts)} unverified prompts (no hook)")
+    undesired_comps = model_base.generate_completions(
+        undesired_prompts, fwd_pre_hooks=[], fwd_hooks=[],
+        batch_size=cfg.eval_batch_size, max_new_tokens=max_new_tokens,
+    )
+    undesired_responses = [c["response"] for c in undesired_comps]
+    undesired_centroid = _centroid(embedder, undesired_responses)
 
     tok = getattr(model_base, "tokenizer", None)
 
@@ -116,12 +157,10 @@ def s1_s2_layer_sweep(
             max_new_tokens=max_new_tokens,
         )
         resp = [c["response"] for c in comps]
-        ans = [str(c["original_answer"]) if c["original_answer"] is not None else "" for c in comps]
 
         resp_emb = _embed(embedder, resp)                       # [n, d]
-        s1 = float(np.mean(resp_emb @ desired_centroid))        # -> desired (refusal), maximize
-        ans_emb = _embed(embedder, ans)
-        s2 = float(np.mean(np.sum(resp_emb * ans_emb, axis=1))) # -> true answer, minimize
+        s1 = float(np.mean(resp_emb @ desired_centroid))        # -> desired refusal, maximize
+        s2 = float(np.mean(resp_emb @ undesired_centroid))      # -> undesired (unverified answers), minimize
         score = s1 - s2
 
         # long-generation diagnostics: how many responses ran to the token budget
@@ -135,8 +174,9 @@ def s1_s2_layer_sweep(
             "frac_at_max_tokens": n_at_max / max(1, len(lens)),
         }
         generations[int(l)] = [
-            {"prompt": c["prompt"], "response": r, "original_answer": a, "resp_tokens": ln}
-            for c, r, a, ln in zip(comps, resp, ans, lens)
+            {"prompt": c["prompt"], "response": r,
+             "original_answer": c["original_answer"], "resp_tokens": ln}
+            for c, r, ln in zip(comps, resp, lens)
         ]
         print(f"  layer {l:3d}: s1={s1:.3f}  s2={s2:.3f}  (s1-s2)={score:.3f}  "
               f"| tok mean {np.mean(lens):.0f} max {max(lens)}  @max {n_at_max}/{len(lens)}")

@@ -34,6 +34,7 @@ $PY run_lunar_moe.py \
     'forget_edge=[wmdp_bio]' \
     use_different_retain_dataset=true \
     different_retain_set_path=dataset/unlearning/wmdp_bio_retain.json \
+    retain_eval_data_path=dataset/unlearning/mmlu_college_biology.json \
     layer_sweep=true \
     sweep_stride=4 \
     sweep_n_forget=64 \

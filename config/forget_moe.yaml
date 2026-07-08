@@ -27,7 +27,8 @@ model_path: ${base_model_path}
 data_name: pistol_sample1
 forget_edge: ['A_B']
 use_different_retain_dataset: false
-different_retain_set_path: dataset/unlearning/factual_data.json
+different_retain_set_path: dataset/unlearning/factual_data.json   # retain set for TRAINING (activation preservation)
+retain_eval_data_path: null   # retain set for EVAL (held-out benign-bio collateral, has answers); WMDP: dataset/unlearning/mmlu_college_biology.json
 
 # -----------------------------
 # Unlearning knobs
@@ -52,8 +53,10 @@ layer_sweep: false
 sweep_stride: 4                 # coarse grid: probe every Nth layer (ignored if sweep_layers set)
 sweep_layers: null              # or an explicit list, e.g. [8, 12, 16, 20, 24, 28]
 sweep_n_forget: 64              # forget-subset size for sweep generation (cost is per candidate layer)
+sweep_n_undesired: 64           # #unverified prompts for the s2 reference (generated once, no hook)
 embed_model_name: sentence-transformers/all-MiniLM-L6-v2
-desired_responses_path: null    # optional file (one "I can't answer" template per line); else built-in defaults
+desired_responses_path: dataset/unlearning/harmful_refusal_response.txt   # s1 target: harmfulness-based refusals (reject because harmful, not privacy/inability)
+undesired_prompts_path: dataset/splits/unverified.json            # s2 target: base model's answers to these = undesired "still answering" style
 
 # -----------------------------
 # Evaluation

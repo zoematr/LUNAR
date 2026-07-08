@@ -99,8 +99,10 @@ def run_forget_moe(cfg):
             candidate_layers=candidate_layers,
             coeff=float(coeff_list[0]),
             desired_responses=load_desired_responses(cfg.get("desired_responses_path", None)),
+            undesired_prompts_path=cfg.get("undesired_prompts_path", "dataset/splits/unverified.json"),
             embed_model_name=cfg.get("embed_model_name", "sentence-transformers/all-MiniLM-L6-v2"),
             n_forget=cfg.get("sweep_n_forget", 64),
+            n_undesired=cfg.get("sweep_n_undesired", 64),
             max_new_tokens=cfg.max_new_tokens,
             save_path=f"{cfg.save_path}/layer_sweep.json",
         )
@@ -190,9 +192,13 @@ def run_forget_moe(cfg):
         eval_target="forget_edge",
         output_es_score=cfg.compute_es_score,
     )
+    # Retain eval = held-out BENIGN-bio collateral probe (a separate file with
+    # answers, e.g. mmlu_college_biology). The forget file (wmdp_bio) has only the
+    # forget edge, so a "not-in-forget_edge" split of it would be empty -> crash.
+    retain_eval_data_path = cfg.get("retain_eval_data_path", None) or data_path
     eval_logs_retained_edge = custom_evaluate(
         cfg=cfg,
-        data_path=data_path,
+        data_path=retain_eval_data_path,
         tokenizer=model_base.tokenizer,
         model=model_base,
         eval_target="retained_edge",

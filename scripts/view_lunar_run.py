@@ -53,7 +53,7 @@ def show_sweep(run_dir, samples):
     print(f"LAYER SWEEP (Procedure 2)   n_forget={sweep['n_forget']}  "
           f"coeff={sweep['coeff']}  max_new_tokens={sweep.get('max_new_tokens','?')}")
     print("=" * 74)
-    print(f"{'layer':>6} {'s1(refuse)':>11} {'s2(answer)':>11} {'s1-s2':>8} "
+    print(f"{'layer':>6} {'s1(refuse)':>11} {'s2(unver.)':>11} {'s1-s2':>8} "
           f"{'tok_mean':>9} {'@max':>7}   score")
     for l in layers:
         r = res[l]
