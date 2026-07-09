@@ -19,16 +19,20 @@ mkdir -p slurm_logs
 PY=~/LUNAR/lunar_venv/bin/python
 cd ~/LUNAR
 
-# "Standard" LUNAR: hardcoded target layer (layer_modified), no sweep.
-# layer 20/28 ~= 71% depth, comparable to the MoE's selected layer 36/48.
+# the layer sweep needs sentence-transformers
+$PY -c "import sentence_transformers" 2>/dev/null || $PY -m pip install -q sentence-transformers
+
+# LUNAR Procedure 2: select the target layer via the (s1 - s2) sweep — same method
+# as the MoE runner, so dense and MoE are directly comparable (no hardcoded layer).
 $PY run_lunar.py \
     model_family=Qwen2-7B-Instruct \
     base_model_path=Qwen/Qwen2-7B-Instruct \
     eval_batch_size=16 \
     data_name=wmdp_bio \
     'forget_edge=[wmdp_bio]' \
-    'layer_modified=[20]' \
     'coeff_list=[+2.0]' \
+    layer_sweep=true \
+    sweep_stride=2 \
     use_different_retain_dataset=true \
     different_retain_set_path=dataset/unlearning/wmdp_bio_retain.json \
     retain_eval_data_path=dataset/unlearning/mmlu_college_biology.json \

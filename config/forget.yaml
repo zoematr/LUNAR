@@ -17,10 +17,22 @@ retain_eval_data_path: null # retain set for EVAL (held-out collateral, has answ
 # -----------------------------
 # Unlearning knobs
 # -----------------------------
-layer_modified: [22] # need to be list
+layer_modified: [22] # hardcoded target layer, used only if layer_sweep: false
 coeff_list: [+2.0] # need to be list
 use_harmful: true
 use_unverified: false
+
+# Layer selection (LUNAR Procedure 2, §3.2) — same as the MoE runner.
+#   layer_sweep: true  -> pick the layer by the (s1 - s2) sweep (overrides layer_modified)
+#   layer_sweep: false -> use the hardcoded layer_modified above (repo's original behavior)
+layer_sweep: false
+sweep_stride: 4                 # coarse grid: probe every Nth layer (ignored if sweep_layers set)
+sweep_layers: null              # or an explicit list, e.g. [8, 12, 16, 20, 24]
+sweep_n_forget: 64              # forget-subset size for sweep generation (cost is per candidate layer)
+sweep_n_undesired: 64           # #unverified prompts for the s2 reference (generated once, no hook)
+embed_model_name: sentence-transformers/all-MiniLM-L6-v2
+desired_responses_path: dataset/unlearning/harmful_refusal_response.txt   # s1 target (harm refusals)
+undesired_prompts_path: dataset/splits/unverified.json                    # s2 target (base answers to these)
 num_epochs: 20
 lr: 0.01
 positions: -1

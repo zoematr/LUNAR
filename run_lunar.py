@@ -46,7 +46,6 @@ def run_forget(cfg):
     # Set up parameters
     # -----------------------------
     positions = cfg.positions
-    layer_idx_list = cfg.layer_modified
     coeff_list = cfg.coeff_list
 
     # -----------------------------
@@ -71,14 +70,8 @@ def run_forget(cfg):
         cfg, model_base, harmful_train, forget_train
     )  # ['n_pos n_layer d_model']
 
-    # should direction calculated independently
-    direction = []
-    for layer_index in layer_idx_list:
-        # +1 because direction is calcuated using pre-hook
-        direction.append(candidate_directions[positions, layer_index+1, :])
-
     # -----------------------------
-    # Prepare training sets
+    # Prepare forget/retain split (needed for the layer sweep AND training)
     # -----------------------------
     (
         forget_dataset,
@@ -93,6 +86,49 @@ def run_forget(cfg):
     )
     print(f"forget_dataset: {len(forget_dataset)}")
     print(f"retain_dataset: {len(retain_dataset)}")
+
+    # -----------------------------
+    # Procedure 2 (LUNAR §3.2): layer selection via the (s1 - s2) sweep.
+    # If cfg.layer_sweep: apply r_UV as an activation-addition at each candidate
+    # layer (no training), generate on the forget set, pick argmax(s1 - s2).
+    # Else: use the hardcoded cfg.layer_modified (repo's original behavior).
+    # -----------------------------
+    if cfg.get("layer_sweep", False):
+        from src.layer_sweep import s1_s2_layer_sweep, load_desired_responses
+
+        num_layers = len(model_base.model_block_modules)
+        if cfg.get("sweep_layers", None):
+            candidate_layers = [int(l) for l in cfg.sweep_layers]
+        else:
+            candidate_layers = list(range(0, num_layers - 1, cfg.get("sweep_stride", 4)))
+        bounded = [l for l in candidate_layers if 0 <= l + 1 < num_layers]
+        if bounded != candidate_layers:
+            print(f"[layer sweep] dropping out-of-range candidates "
+                  f"{[l for l in candidate_layers if l not in bounded]} (need 0 <= l+1 < {num_layers})")
+        candidate_layers = bounded
+        best_layer, _ = s1_s2_layer_sweep(
+            cfg,
+            model_base,
+            candidate_directions,
+            forget_dataset,
+            candidate_layers=candidate_layers,
+            coeff=float(coeff_list[0]),
+            desired_responses=load_desired_responses(cfg.get("desired_responses_path", None)),
+            undesired_prompts_path=cfg.get("undesired_prompts_path", "dataset/splits/unverified.json"),
+            embed_model_name=cfg.get("embed_model_name", "sentence-transformers/all-MiniLM-L6-v2"),
+            n_forget=cfg.get("sweep_n_forget", 64),
+            n_undesired=cfg.get("sweep_n_undesired", 64),
+            max_new_tokens=cfg.max_new_tokens,
+            save_path=f"{cfg.save_path}/layer_sweep.json",
+        )
+        layer_idx_list = [best_layer]
+    else:
+        layer_idx_list = list(cfg.layer_modified)
+    print(f"target layer(s): {layer_idx_list}")
+
+    # direction (r_UV) for the selected layer(s): +1 because direction is measured
+    # with a pre-hook (input to block l+1 == output of block l).
+    direction = [candidate_directions[positions, l + 1, :] for l in layer_idx_list]
     updated_model = copy.deepcopy(model_base)
 
     (
