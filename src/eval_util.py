@@ -173,7 +173,9 @@ def run_generation(cfg, batch, model, tokenizer, fwd_pre_hooks=[], fwd_hooks=[],
     left_pad_tokenizer.pad_token = left_pad_tokenizer.eos_token
     left_pad_tokenizer.pad_token_id = left_pad_tokenizer.eos_token_id
 
-    inputs = left_pad_tokenizer.batch_encode_plus(
+    # tokenizer __call__ replaces the removed batch_encode_plus (gone in transformers 5.x);
+    # same kwargs, batches natively.
+    inputs = left_pad_tokenizer(
         input_strings, add_special_tokens=True, return_tensors="pt", padding=True
     ).to("cuda")
 
