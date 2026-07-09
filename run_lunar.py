@@ -171,9 +171,13 @@ def run_forget(cfg):
         eval_target="forget_edge",
         output_es_score=cfg.compute_es_score,
     )
+    # Retain eval = held-out benign collateral probe (separate file with answers,
+    # e.g. mmlu_college_biology). A "not-in-forget_edge" split of a single-edge
+    # forget file (wmdp_bio) would be empty -> IndexError.
+    retain_eval_data_path = cfg.get("retain_eval_data_path", None) or data_path
     eval_logs_retained_edge = custom_evaluate(
         cfg=cfg,
-        data_path=data_path,
+        data_path=retain_eval_data_path,
         tokenizer=model_base.tokenizer,
         model=updated_model,
         eval_target="retained_edge",
