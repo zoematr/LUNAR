@@ -177,6 +177,10 @@ class _FusedDownProj:
 class FusedExpertProxy:
     """Uniform `.down_proj.weight` view over one expert of a fused experts module."""
 
+    # Marks this as a fused (non-nn.Module) proxy so activation collectors route to
+    # the fused-forward capture path instead of trying to register hooks on it.
+    _is_fused = True
+
     def __init__(self, fused_down_proj: torch.nn.Parameter, idx: int, hidden_size: int):
         self.down_proj = _FusedDownProj(
             _FusedExpertWeight(fused_down_proj, idx, hidden_size)
