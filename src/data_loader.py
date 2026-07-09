@@ -20,6 +20,20 @@ QWEN_CHAT_TEMPLATE = """<|im_start|>user
 <|im_start|>assistant
 """
 
+# Qwen3 MoE: MUST match the generation-time template in qwen3moe_model.py
+# (system prompt + baked empty <think></think> block, so the answer starts at the
+# same position the model was unlearned/generated at). Keep these identical.
+QWEN3_CHAT_TEMPLATE = """<|im_start|>system
+You are a helpful assistant.<|im_end|>
+<|im_start|>user
+{instruction}<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+
+"""
+
 LLAMA2_CHAT_TEMPLATE = "[INST] {instruction} [/INST]"
 
 GEMMA_CHAT_TEMPLATE = """<start_of_turn>user
@@ -48,6 +62,8 @@ def convert_raw_data_to_model_qa(tokenizer, max_length, question, answer, config
         new_question = GEMMA_CHAT_TEMPLATE.format(instruction=question)
     elif configs.model_family in ("olmo-2-1b-instruct", "olmoe-1b-7b-instruct"):
         new_question = OLMO_CHAT_TEMPLATE.format(instruction=question)
+    elif configs.model_family in ("Qwen3-30B-A3B", "Qwen3.6-35B-A3B"):
+        new_question = QWEN3_CHAT_TEMPLATE.format(instruction=question)
     else:
         raise ValueError(f"Invalid model_family")
 
@@ -104,6 +120,8 @@ def convert_raw_questions_to_model_questions(tokenizer, max_length, question, co
         new_question = GEMMA_CHAT_TEMPLATE.format(instruction=question)
     elif configs.model_family in ("olmo-2-1b-instruct", "olmoe-1b-7b-instruct"):
         new_question = OLMO_CHAT_TEMPLATE.format(instruction=question)
+    elif configs.model_family in ("Qwen3-30B-A3B", "Qwen3.6-35B-A3B"):
+        new_question = QWEN3_CHAT_TEMPLATE.format(instruction=question)
     else:
         raise ValueError(f"Invalid model_family")
 
