@@ -31,6 +31,7 @@ $PY run_lunar_moe.py \
     eval_batch_size=8 \
     data_name=wmdp_bio \
     'forget_edge=[wmdp_bio]' \
+    'coeff_list=[+1.0]' \
     use_different_retain_dataset=true \
     different_retain_set_path=dataset/unlearning/wmdp_bio_retain.json \
     retain_eval_data_path=dataset/unlearning/mmlu_college_biology.json \
