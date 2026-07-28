@@ -132,6 +132,12 @@ def run_generation(cfg, batch, model, tokenizer, fwd_pre_hooks=[], fwd_hooks=[],
     elif cfg.model_family in ("Qwen2-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen2-57B-A14B-Instruct", "Qwen1.5-MoE-A2.7B-Chat"):
         input_strings = tokenizer.batch_decode(input_ids, skip_special_tokens=False)
         split_symbol = "<|im_end|>\n<|im_start|>assistant\n"
+    elif cfg.model_family in ("Qwen3-30B-A3B", "Qwen3.6-35B-A3B"):
+        # Qwen3 bakes an empty <think></think> block into the assistant turn (see
+        # QWEN3_CHAT_TEMPLATE); include it so [0]+split_symbol = the full prompt the
+        # model expects and [1] = the answer only.
+        input_strings = tokenizer.batch_decode(input_ids, skip_special_tokens=False)
+        split_symbol = "<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
     elif cfg.model_family == "gemma-7b-it":
         input_strings = tokenizer.batch_decode(input_ids, skip_special_tokens=False)
         split_symbol = "<end_of_turn>\n<start_of_turn>model\n"
@@ -145,7 +151,12 @@ def run_generation(cfg, batch, model, tokenizer, fwd_pre_hooks=[], fwd_hooks=[],
         input_strings = tokenizer.batch_decode(input_ids, skip_special_tokens=True)
         split_symbol = " [/INST]"
 
-    ground_truth = [s.split(split_symbol)[1] for s in input_strings]
+    if not all(split_symbol in s for s in input_strings):
+        n_missing = sum(split_symbol not in s for s in input_strings)
+        print(f"[eval] WARNING: split_symbol not found in {n_missing}/{len(input_strings)} "
+              f"inputs (model_family={cfg.model_family}) — ground truth empty for those. "
+              f"Check the split_symbol matches the chat template.")
+    ground_truth = [s.split(split_symbol)[1] if split_symbol in s else "" for s in input_strings]
     input_strings = [s.split(split_symbol)[0] for s in input_strings]
     input_strings = [s + split_symbol for s in input_strings]
     if cfg.model_family == "llama3-8b-instruct":
@@ -153,7 +164,7 @@ def run_generation(cfg, batch, model, tokenizer, fwd_pre_hooks=[], fwd_hooks=[],
             re.sub(r"(<\|eot_id\|>)+$", "", re.sub(r"\n\n", "", text))
             for text in ground_truth
         ]
-    elif cfg.model_family in ("Qwen2-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen2-57B-A14B-Instruct", "Qwen1.5-MoE-A2.7B-Chat"):
+    elif cfg.model_family in ("Qwen2-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen2-57B-A14B-Instruct", "Qwen1.5-MoE-A2.7B-Chat", "Qwen3-30B-A3B", "Qwen3.6-35B-A3B"):
         ground_truth = [
             re.sub(
                 r"(<\|im_end\|>)+$", "", re.sub(r"\n<\|im_start\|>assistant", "", text)
