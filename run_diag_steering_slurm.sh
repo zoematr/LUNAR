@@ -16,6 +16,7 @@ mkdir -p slurm_logs
 PY=~/LUNAR/lunar_venv/bin/python
 cd ~/LUNAR
 
+# sweep several strengths in ONE job (model loaded once, r_UV computed once)
 $PY scripts/diag_steering.py \
     --model_family Qwen3-30B-A3B --model_path Qwen/Qwen3-30B-A3B \
-    --layer 36 --coeff 1.0 --n 10
+    --layer 36 --coeffs 0.25 0.5 0.75 1.0 --n 10
