@@ -10,8 +10,9 @@ linear_probe.py — two questions that feed thesis 4.3 / 5.4:
 Captures last-token residual activations at every block input in ONE forward pass,
 then at each layer:
   * cv_acc  : 5-fold CV logistic-regression accuracy, forget vs {benign, general}.
-              Both use natural-language questions, so the format confound that
-              inflated the earlier silhouette score is controlled. chance = 0.50.
+              chance = 0.50. Forget and benign are both native MCQ
+              (wmdp_bio_mcq vs mmlu_college_biology), so the contrast is format-
+              matched and any separation reflects content, not free-text-vs-MCQ.
   * ruv_sep : how well a threshold on <a, r_UV_hat> separates forget vs retain
               (IN-SAMPLE threshold; r_UV itself is computed from held-out data).
   * cos_wr  : cos(discriminative axis w, r_UV) in raw activation space.
@@ -174,10 +175,10 @@ def main():
                     help="forget prompts to capture for the null + length-matched controls")
     ap.add_argument("--match_tol", type=int, default=4,
                     help="word-count caliper for the length-matched control")
-    ap.add_argument("--forget", default="dataset/unlearning/wmdp_bio.json")
+    ap.add_argument("--forget", default="dataset/unlearning/wmdp_bio_mcq.json")
     ap.add_argument("--forget_edge", default="wmdp_bio")
-    ap.add_argument("--benign", default="dataset/unlearning/mmlu_college_biology.json")
-    ap.add_argument("--general", default="dataset/unlearning/factual_data.json")
+    ap.add_argument("--benign", default="dataset/unlearning/mmlu_biology.json")
+    ap.add_argument("--general", default="dataset/unlearning/general_mcq.json")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -103,9 +103,9 @@ def main():
     ap.add_argument("--forget_edge", default="wmdp_bio")
     ap.add_argument("--max_new_tokens", type=int, default=64)
     ap.add_argument("--batch_size", type=int, default=8)
-    ap.add_argument("--forget", default="dataset/unlearning/wmdp_bio.json")
-    ap.add_argument("--benign", default="dataset/unlearning/mmlu_college_biology.json")
-    ap.add_argument("--general", default="dataset/unlearning/factual_data.json")
+    ap.add_argument("--forget", default="dataset/unlearning/wmdp_bio_mcq.json")
+    ap.add_argument("--benign", default="dataset/unlearning/mmlu_biology.json")
+    ap.add_argument("--general", default="dataset/unlearning/general_mcq.json")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")

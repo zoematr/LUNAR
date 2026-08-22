@@ -6,8 +6,11 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
 #SBATCH --time=02:00:00
-#SBATCH --gres=gpu:1
-#SBATCH -p minor
+#SBATCH --gres=gpu:nvidia_rtx_a6000:2
+#SBATCH -p major
+#SBATCH --qos=major_student
+# NEVER -p minor (V100/sm_70 unsupported). LRZ: override on the sbatch line with
+#   -p mcml-hgx-a100-80x4 --qos=mcml --gres=gpu:1
 
 # Single-dataset MoE routing analysis (knowledge spread across experts).
 # Submit from the repo root:  sbatch run_routing_slurm.sh
@@ -42,7 +45,7 @@ echo "GPU state at start:"; nvidia-smi --query-gpu=name,memory.total,memory.used
 
 MODEL_FAMILY=${MODEL_FAMILY:-Qwen3-30B-A3B}
 MODEL_PATH=${MODEL_PATH:-Qwen/Qwen3-30B-A3B}
-MAX_SAMPLES=${MAX_SAMPLES:-160}
+MAX_SAMPLES=${MAX_SAMPLES:-450}   # balanced across the three sets (benign 475 / general 480 bind)
 # Token positions to record routing for: content (question span only, default),
 # all (incl. chat template), or last (last question token). To isolate the
 # template-dilution effect, run once with ROUTE_TOKENS=content and once with
@@ -58,9 +61,9 @@ ROUTE_TOKENS=${ROUTE_TOKENS:-content}
 # only. KNOWN, ACCEPTED CAVEAT: mmlu_college_biology keeps its inline MCQ options
 # while wmdp_bio/science do not, so the benign comparison still carries some
 # MCQ-format asymmetry -- document this when reporting.
-for spec in "wmdp_bio:dataset/unlearning/wmdp_bio.json" \
-            "mmlu_college_biology:dataset/unlearning/mmlu_college_biology.json" \
-            "general_mmlu_science:dataset/unlearning/general_mmlu_science.json"; do
+for spec in "wmdp_bio_mcq:dataset/unlearning/wmdp_bio_mcq.json" \
+            "mmlu_biology:dataset/unlearning/mmlu_biology.json" \
+            "general_mcq:dataset/unlearning/general_mcq.json"; do
   tag=${spec%%:*}; path=${spec#*:}
   echo "=== routing: $tag (route_tokens=$ROUTE_TOKENS) ==="
   python scripts/routing_single.py \

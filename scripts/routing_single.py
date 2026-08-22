@@ -249,7 +249,9 @@ def main():
         "template_suffix_tokens": int(suffix_len),
         "offset": args.offset,
         "shuffle": bool(args.shuffle),
-        "freq": freq.round(6).tolist(),                      # [L][E] selection frequency
+        "counts": counts.astype(np.int64).tolist(),          # [L][E] RAW #times each expert was top-k
+        "token_counts_per_layer": token_counts.tolist(),     # [L] tokens counted per layer (denominator)
+        "freq": freq.round(6).tolist(),                      # [L][E] selection frequency (counts / sum)
         "avg_weight": avg_weight.round(6).tolist(),          # [L][E] full-softmax mean (reference)
         "applied_weight": applied_weight.round(6).tolist(),  # [L][E] actual output weight (impact)
         "entropy_per_layer": entropy.round(6).tolist(),      # [L]

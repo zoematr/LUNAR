@@ -135,9 +135,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model_family", required=True)
     ap.add_argument("--model_path", required=True)
-    ap.add_argument("--forget", default="dataset/unlearning/wmdp_bio.json")
-    ap.add_argument("--retain", default="dataset/unlearning/mmlu_college_biology.json")
-    ap.add_argument("--max_samples", type=int, default=160)
+    ap.add_argument("--forget", default="dataset/unlearning/wmdp_bio_mcq.json")
+    ap.add_argument("--retain", default="dataset/unlearning/mmlu_biology.json")
+    ap.add_argument("--max_samples", type=int, default=250,
+                    help="prompts PER set. Not 'all': this captures per-TOKEN hidden "
+                         "states at every layer, so memory (not balance) is the limit.")
     ap.add_argument("--min_pts", type=int, default=20,
                     help="skip an expert at a layer if fewer tokens routed there")
     ap.add_argument("--save_path", default="run_results/separability")

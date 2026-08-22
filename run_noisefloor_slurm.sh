@@ -5,9 +5,12 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
-#SBATCH --time=00:45:00
-#SBATCH --gres=gpu:1
-#SBATCH -p minor
+#SBATCH --time=01:30:00
+#SBATCH --gres=gpu:nvidia_rtx_a6000:2
+#SBATCH -p major
+#SBATCH --qos=major_student
+# NEVER -p minor (V100/sm_70 unsupported). LRZ: override on the sbatch line with
+#   -p mcml-hgx-a100-80x4 --qos=mcml --gres=gpu:1
 
 # Split-half noise floor for the routing analysis: run wmdp_bio twice on two
 # DISJOINT halves (same shuffle seed, different offset), so we can measure how
@@ -39,9 +42,10 @@ nvidia-smi --query-gpu=name,memory.total,memory.used --format=csv,noheader
 MODEL_FAMILY=${MODEL_FAMILY:-Qwen3-30B-A3B}
 MODEL_PATH=${MODEL_PATH:-Qwen/Qwen3-30B-A3B}
 ROUTE_TOKENS=${ROUTE_TOKENS:-content}
-HALF=${HALF:-600}          # prompts per half
+HALF=${HALF:-450}          # prompts per half — MATCH the routing comparison n (450)
+                           # so the floor reflects wander at the SAME sample size
 SEED=${SEED:-0}            # same seed for both -> same shuffle order
-DATA=dataset/unlearning/wmdp_bio.json
+DATA=dataset/unlearning/wmdp_bio_mcq.json
 
 # Half A: shuffled prompts [0 : HALF]
 echo "=== noise-floor half A (seed=$SEED, [0:$HALF]) ==="
