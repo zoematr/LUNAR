@@ -345,7 +345,7 @@ def get_dataloader(cfg, data_path, tokenizer, eval_target):
             data_path,
             tokenizer=tokenizer,
             configs=cfg,
-            max_length=512,
+            max_length=768,   # MCQ questions (stem + 4 options) need >512; longest wmdp ~1300 truncates, clamp in data_loader handles it
             split="train",
         )
     elif eval_target == "retained_edge":
@@ -353,7 +353,7 @@ def get_dataloader(cfg, data_path, tokenizer, eval_target):
             data_path,
             tokenizer=tokenizer,
             configs=cfg,
-            max_length=512,
+            max_length=768,   # MCQ questions (stem + 4 options) need >512; longest wmdp ~1300 truncates, clamp in data_loader handles it
             split="train",
         )
     elif eval_target == "factual_data":
@@ -361,7 +361,7 @@ def get_dataloader(cfg, data_path, tokenizer, eval_target):
             data_path,
             tokenizer=tokenizer,
             configs=cfg,
-            max_length=512,
+            max_length=768,   # MCQ questions (stem + 4 options) need >512; longest wmdp ~1300 truncates, clamp in data_loader handles it
             split="train",
         )
     else:

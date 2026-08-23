@@ -6,9 +6,9 @@
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=128G
 #SBATCH --time=01:30:00
-#SBATCH --gres=gpu:nvidia_rtx_a6000:2
-#SBATCH -p major
-#SBATCH --qos=major_student
+#SBATCH --gres=gpu:1
+#SBATCH -p mcml-hgx-a100-80x4
+#SBATCH --qos=mcml
 # NEVER -p minor (V100/sm_70 unsupported). LRZ: override on the sbatch line with
 #   -p mcml-hgx-a100-80x4 --qos=mcml --gres=gpu:1
 
@@ -27,11 +27,12 @@ WORK_DIR=${SLURM_SUBMIT_DIR:-$(pwd)}
 cd $WORK_DIR
 
 VENV_DIR=${VENV_DIR:-$HOME/LUNAR/lunar_venv}
+set -e   # fail loudly instead of silent-COMPLETE
 source $VENV_DIR/bin/activate
 
 export PYTHONPATH=$WORK_DIR:$PYTHONPATH
 export HF_HOME=${HF_HOME:-$HOME/.cache/huggingface}
-export HF_TOKEN=$(cat $HF_HOME/token 2>/dev/null || cat $HOME/.cache/huggingface/token 2>/dev/null)
+export HF_TOKEN=$(cat $HF_HOME/token 2>/dev/null || cat $HOME/.cache/huggingface/token 2>/dev/null || true)
 
 mkdir -p logs
 

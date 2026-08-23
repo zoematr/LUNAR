@@ -88,8 +88,11 @@ def convert_raw_data_to_model_qa(tokenizer, max_length, question, answer, config
             encoded["input_ids"] + [tokenizer.eos_token_id] + [-100] * (pad_length - 1)
         )
 
-    # change label to -100 for question tokens
-    for i in range(num_question_tokens):
+    # change label to -100 for question tokens.
+    # clamp to len(label): a long (e.g. MCQ) question can tokenize to MORE than
+    # max_length, in which case num_question_tokens > len(label) and the write
+    # would IndexError. Clamping masks the whole (truncated) sequence safely.
+    for i in range(min(num_question_tokens, len(label))):
         label[i] = -100
 
     return (

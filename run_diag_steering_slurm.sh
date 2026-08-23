@@ -3,9 +3,9 @@
 #SBATCH --output=slurm_logs/diag_steer_%j.out
 #SBATCH --error=slurm_logs/diag_steer_%j.err
 #SBATCH --time=06:00:00
-#SBATCH -p major
-#SBATCH --qos=major_student
-#SBATCH --gres=gpu:nvidia_rtx_a6000:2
+#SBATCH -p mcml-hgx-a100-80x4
+#SBATCH --qos=mcml
+#SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=80G
 # Proxy-vs-base steering diagnostic (T2/T3) on Qwen3-30B. Oettingenstr A6000 (2x48GB).

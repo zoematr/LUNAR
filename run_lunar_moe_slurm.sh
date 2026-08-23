@@ -3,9 +3,9 @@
 #SBATCH --output=slurm_logs/lunar_qwen3_%j.out
 #SBATCH --error=slurm_logs/lunar_qwen3_%j.err
 #SBATCH --time=06:00:00
-#SBATCH -p major
-#SBATCH --qos=major_student
-#SBATCH --gres=gpu:nvidia_rtx_a6000:2
+#SBATCH -p mcml-hgx-a100-80x4
+#SBATCH --qos=mcml
+#SBATCH --gres=gpu:1
 #SBATCH --cpus-per-task=12
 #SBATCH --mem=96G
 # Qwen3-30B-A3B is ~61GB in bf16. 2x A6000 (48GB, sm_86) = 96GB, fits fully on-GPU.
@@ -34,7 +34,7 @@ cd ~/LUNAR
 $PY run_lunar_moe.py \
     model_family=Qwen3-30B-A3B \
     base_model_path=Qwen/Qwen3-30B-A3B \
-    eval_batch_size=8 \
+    eval_batch_size=4 \
     data_name=wmdp_bio_mcq \
     'forget_edge=[wmdp_bio]' \
     'coeff_list=[+1.0]' \
