@@ -302,15 +302,17 @@ def compute_MRR(scores, gt, tokenizer):
     # Initialize an empty tensor of the desired shape, filled with zeros
     score_size = scores[0].shape[0]
     vocab_size = scores[0].shape[1]
-    logits = torch.zeros(score_size, 512, vocab_size, device="cuda")
+    # allocate exactly as many positions as we have score tensors (was hardcoded to
+    # 512, which both wasted memory and would IndexError if len(scores) > 512)
+    n_steps = len(scores)
+    logits = torch.zeros(score_size, n_steps, vocab_size, device="cuda")
 
     # Iterate over the tuple of tensors and assign each to the correct position in the combined tensor
     for i, score_tensor in enumerate(scores):
-        # print(f"Tensor {i}: shape {score_tensor.shape}, device {score_tensor.device}")
         logits[:, i, :] = score_tensor
-    probabilities = torch.nn.functional.softmax(
-        logits, dim=-1
-    )  # torch.Size([16, 512, 32000])
+    probabilities = torch.nn.functional.softmax(logits, dim=-1)
+
+    n_skipped = 0
     for i in range(len(gt)):
         probs_per_gt = probabilities[i]
         reciprocal_ranks = []
@@ -320,22 +322,30 @@ def compute_MRR(scores, gt, tokenizer):
         gt_indices = tokenizer.encode(gt[i], add_special_tokens=False)
 
         for j, gt_index in enumerate(gt_indices):
-            # Get the probability distribution for the current token
-            probs = probs_per_gt[j]  # len = 32000
+            # only score positions we actually generated logits for
+            if j >= n_steps:
+                break
+            probs = probs_per_gt[j]
             sorted_indices = probs.argsort(descending=True)
-            # Find the rank of the current token
             positions = (sorted_indices == gt_index).nonzero()
+            if positions.numel() == 0:
+                continue
             rank = positions[0].item() + 1
-            # Calculate reciprocal rank
-            reciprocal_rank = 1.0 / rank
-            reciprocal_ranks.append(reciprocal_rank)
-            # Calculate hit rate
-            if rank <= 100:
-                hit_check.append(1)
-            else:
-                hit_check.append(0)
+            reciprocal_ranks.append(1.0 / rank)
+            hit_check.append(1 if rank <= 100 else 0)
+
+        # An empty ground truth (e.g. the chat-template marker was missing, so the
+        # split produced "") yields no scored tokens. Skip such items instead of
+        # dividing by zero, which would abort the whole evaluation run.
+        if not reciprocal_ranks:
+            n_skipped += 1
+            continue
         MRR_res.append(sum(reciprocal_ranks) / len(reciprocal_ranks))
         hit_rate.append(sum(hit_check) / len(hit_check))
+
+    if n_skipped:
+        print(f"[eval] compute_MRR: skipped {n_skipped}/{len(gt)} items in this batch "
+              f"(empty or unscorable ground truth)")
     return MRR_res, hit_rate
 
 

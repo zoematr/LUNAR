@@ -51,22 +51,38 @@ OLMO_CHAT_TEMPLATE = """<|user|>
 
 def convert_raw_data_to_model_qa(tokenizer, max_length, question, answer, configs):
     if configs.model_family == "llama3-8b-instruct":
-        new_question = LLAMA3_CHAT_TEMPLATE.format(instruction=question)
+        template = LLAMA3_CHAT_TEMPLATE
     elif configs.model_family == "Qwen2-7B-Instruct":
-        new_question = QWEN_CHAT_TEMPLATE.format(instruction=question)
+        template = QWEN_CHAT_TEMPLATE
     elif configs.model_family == "Qwen2.5-7B-Instruct":
-        new_question = QWEN_CHAT_TEMPLATE.format(instruction=question)
+        template = QWEN_CHAT_TEMPLATE
     elif configs.model_family == "llama2-7b-chat":
-        new_question = LLAMA2_CHAT_TEMPLATE.format(instruction=question)
+        template = LLAMA2_CHAT_TEMPLATE
     elif configs.model_family == "gemma-7b-it":
-        new_question = GEMMA_CHAT_TEMPLATE.format(instruction=question)
+        template = GEMMA_CHAT_TEMPLATE
     elif configs.model_family in ("olmo-2-1b-instruct", "olmoe-1b-7b-instruct"):
-        new_question = OLMO_CHAT_TEMPLATE.format(instruction=question)
+        template = OLMO_CHAT_TEMPLATE
     elif configs.model_family in ("Qwen3-30B-A3B", "Qwen3.6-35B-A3B"):
-        new_question = QWEN3_CHAT_TEMPLATE.format(instruction=question)
+        template = QWEN3_CHAT_TEMPLATE
     else:
         raise ValueError(f"Invalid model_family")
 
+    # Truncate the QUESTION rather than the assembled text. Truncating
+    # `new_question + answer` at max_length can cut off the tail of the chat
+    # template, which is where the assistant marker lives; downstream that makes
+    # the split on the marker fail and yields an EMPTY ground truth (and then a
+    # ZeroDivisionError in compute_MRR). Long multiple-choice items with embedded
+    # options routinely exceed max_length, so we reserve room for the template and
+    # the answer and shorten only the question itself.
+    overhead = len(tokenizer.tokenize(template.format(instruction=""),
+                                      add_special_tokens=True))
+    n_answer = len(tokenizer.tokenize(str(answer), add_special_tokens=False))
+    budget = max_length - overhead - n_answer - 8   # 8 tokens of safety margin
+    q_ids = tokenizer.encode(question, add_special_tokens=False)
+    if budget > 0 and len(q_ids) > budget:
+        question = tokenizer.decode(q_ids[:budget], skip_special_tokens=True)
+
+    new_question = template.format(instruction=question)
     full_text = new_question + answer
     num_question_tokens = len(tokenizer.tokenize(new_question, add_special_tokens=True))
 
