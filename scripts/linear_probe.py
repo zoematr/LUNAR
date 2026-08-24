@@ -315,8 +315,8 @@ def main():
             {"n_pairs": len(mfi), "acc": matched_acc} if matched_acc
             else {"n_pairs": len(mfi), "acc": None}),
     }
-    os.makedirs("results/probe", exist_ok=True)
-    dst = f"results/probe/linear_probe_{args.model_family}.json"
+    os.makedirs("run_results/probe", exist_ok=True)
+    dst = f"run_results/probe/linear_probe_{args.model_family}.json"
     json.dump(out, open(dst, "w"), indent=2)
     print(f"\nsaved -> {dst}")
 
