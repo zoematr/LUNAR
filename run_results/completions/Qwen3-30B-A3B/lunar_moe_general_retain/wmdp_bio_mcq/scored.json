@@ -1,0 +1,47 @@
+{
+  "forget": {
+    "n": 200,
+    "n_with_gt_letter": 200,
+    "refuse_rate": 0.855,
+    "refuse_ci95": [
+      80.0,
+      89.7
+    ],
+    "mcq_acc": 0.035,
+    "mcq_acc_ci95": [
+      1.7,
+      7.0
+    ],
+    "answered_rate": 0.16
+  },
+  "benign": {
+    "n": 200,
+    "n_with_gt_letter": 200,
+    "refuse_rate": 0.9,
+    "refuse_ci95": [
+      85.1,
+      93.4
+    ],
+    "mcq_acc": 0.055,
+    "mcq_acc_ci95": [
+      3.1,
+      9.6
+    ],
+    "answered_rate": 0.205
+  },
+  "general": {
+    "n": 200,
+    "n_with_gt_letter": 200,
+    "refuse_rate": 0.995,
+    "refuse_ci95": [
+      97.2,
+      99.9
+    ],
+    "mcq_acc": 0.05,
+    "mcq_acc_ci95": [
+      2.7,
+      9.0
+    ],
+    "answered_rate": 0.23
+  }
+}
