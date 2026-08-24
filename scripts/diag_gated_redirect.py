@@ -126,7 +126,16 @@ def main():
     ap.add_argument("--batch_size", type=int, default=8)
     ap.add_argument("--forget", default="dataset/unlearning/wmdp_bio_mcq.json")
     ap.add_argument("--benign", default="dataset/unlearning/mmlu_biology.json")
-    ap.add_argument("--general", default="dataset/unlearning/general_mcq.json")
+    ap.add_argument("--general", default="dataset/unlearning/general_mcq_eval.json",
+                    help="held-out general eval set (subject-stratified, all 10 MMLU "
+                         "subjects, disjoint from --general_fit)")
+    ap.add_argument("--general_fit", default="dataset/unlearning/general_mcq_train.json",
+                    help="general items used to FIT the gate when --gate_include_general "
+                         "is set; must not overlap --general")
+    ap.add_argument("--gate_include_general", action="store_true",
+                    help="fit the gate as forget - 0.5*(benign+general) instead of "
+                         "forget - benign, so the gate axis also knows what "
+                         "out-of-domain retain content looks like")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -146,7 +155,7 @@ def main():
     cand_dir = generate_candidate_directions(cfg, model_base, harmful_train, forget_train)
     r_uv = cand_dir[-1, tap, :].float().to(device)
 
-    # --- discriminative GATE axis, fit on TRAIN forget/benign, held-out for eval ---
+    # --- discriminative GATE axis, fit on TRAIN forget/benign(/general), held-out for eval ---
     benign_all = _load_questions(args.benign, 10_000)
     general_all = _load_questions(args.general, 10_000)
     # train fit set (disjoint from the held-out eval set taken from the tail)
@@ -157,12 +166,33 @@ def main():
     f_ev = forget_train[-args.n:]
     b_ev = benign_all[-args.n:]
     g_ev = general_all[-args.n:]
-    print(f"fit gate on {len(f_fit)} forget / {len(b_fit)} benign; "
-          f"eval on held-out {len(f_ev)}/{len(b_ev)}/{len(g_ev)}")
 
     Af = _capture_layer(model_base, f_fit, tap)
     Ab = _capture_layer(model_base, b_fit, tap)
-    gate = Af.mean(0) - Ab.mean(0)               # points benign -> forget
+
+    if args.gate_include_general:
+        # Fit general on a SEPARATE file (--general_fit) from the general eval file
+        # (--general), so fit and held-out eval never share items. Default points
+        # at the subject-stratified general_mcq_train.json / general_mcq_eval.json
+        # pair (all 10 MMLU subjects on both sides, no item overlap).
+        general_fit_all = _load_questions(args.general_fit, 10_000)
+        ng_fit = min(args.n_fit, len(general_fit_all))
+        g_fit = general_fit_all[:ng_fit]
+        Ag_fit = _capture_layer(model_base, g_fit, tap)
+        # domain-balanced: average the two retain-domain means equally, rather than
+        # pooling all points together (which would let whichever domain has more
+        # fit examples dominate the gate).
+        retain_mean = 0.5 * (Ab.mean(0) + Ag_fit.mean(0))
+        print(f"fit gate on {len(f_fit)} forget / {len(b_fit)} benign / {len(g_fit)} general "
+              f"(gate = forget - 0.5*(benign+general)); "
+              f"eval on held-out {len(f_ev)}/{len(b_ev)}/{len(g_ev)}")
+    else:
+        retain_mean = Ab.mean(0)
+        print(f"fit gate on {len(f_fit)} forget / {len(b_fit)} benign "
+              f"(gate = forget - benign, general NOT in fit); "
+              f"eval on held-out {len(f_ev)}/{len(b_ev)}/{len(g_ev)}")
+
+    gate = Af.mean(0) - retain_mean               # points retain -> forget
     gate_hat_np = gate / (np.linalg.norm(gate) + 1e-8)
     gate_hat = torch.tensor(gate_hat_np, dtype=torch.float32, device=device)
 
