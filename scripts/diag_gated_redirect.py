@@ -136,6 +136,9 @@ def main():
                     help="fit the gate as forget - 0.5*(benign+general) instead of "
                          "forget - benign, so the gate axis also knows what "
                          "out-of-domain retain content looks like")
+    ap.add_argument("--save_generations", default=None,
+                    help="if set, path to a JSON file where the gated_mid prompt/response "
+                         "pairs per split are saved (for qualitative examples)")
     args = ap.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -221,6 +224,7 @@ def main():
     base = {k: _refuse_rate(_generate(model_base, v, tap, None,
             args.max_new_tokens, args.batch_size)) for k, v in splits.items()}
 
+    saved_gens = {}
     print("\nrefuse% by condition (held-out, n per split):")
     for coeff in args.coeffs:
         ung = get_ungated_addition_pre_hook(r_uv, coeff)
@@ -228,8 +232,15 @@ def main():
         glen = get_gated_addition_pre_hook(gate_hat, thr_len, r_uv, coeff)
         res = {"base": base}
         for label, hook in [("ungated", ung), ("gated_mid", gmid), ("gated_lenient", glen)]:
-            res[label] = {k: _refuse_rate(_generate(model_base, v, tap, hook,
-                          args.max_new_tokens, args.batch_size)) for k, v in splits.items()}
+            res[label] = {}
+            for k, v in splits.items():
+                gens = _generate(model_base, v, tap, hook,
+                                 args.max_new_tokens, args.batch_size)
+                res[label][k] = _refuse_rate(gens)
+                if args.save_generations and label == "gated_mid":
+                    saved_gens.setdefault(f"coeff_{coeff}", {})[k] = [
+                        {"prompt": p, "response": r} for p, r in zip(v, gens)
+                    ]
         print(f"\n  coeff = {coeff}")
         hdr = "  " + "condition".ljust(15) + "".join(s.rjust(9) for s in splits)
         print(hdr)
@@ -239,6 +250,11 @@ def main():
             print(row)
     print("\nREAD: gated should keep forget HIGH while benign/general drop vs ungated.")
     print("If gated benign/general stay high, the gate is leaky (thin/topic-only axis).")
+
+    if args.save_generations:
+        with open(args.save_generations, "w") as f:
+            json.dump(saved_gens, f, indent=1, ensure_ascii=False)
+        print(f"\nsaved gated_mid generations to {args.save_generations}")
 
 
 if __name__ == "__main__":
