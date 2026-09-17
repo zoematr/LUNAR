@@ -221,10 +221,16 @@ def main():
 
     # --- behavioral eval: refuse% per split, base / ungated / gated ---
     splits = {"forget": f_ev, "benign": b_ev, "general": g_ev}
-    base = {k: _refuse_rate(_generate(model_base, v, tap, None,
-            args.max_new_tokens, args.batch_size)) for k, v in splits.items()}
+    base_gens = {k: _generate(model_base, v, tap, None,
+                 args.max_new_tokens, args.batch_size) for k, v in splits.items()}
+    base = {k: _refuse_rate(g) for k, g in base_gens.items()}
 
     saved_gens = {}
+    if args.save_generations:
+        saved_gens["base"] = {
+            k: [{"prompt": p, "response": r} for p, r in zip(splits[k], base_gens[k])]
+            for k in splits
+        }
     print("\nrefuse% by condition (held-out, n per split):")
     for coeff in args.coeffs:
         ung = get_ungated_addition_pre_hook(r_uv, coeff)
